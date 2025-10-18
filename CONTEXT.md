@@ -19,11 +19,19 @@
   - ✅ `RightPanel` 컴포넌트 (우측 패널)
   - ✅ CSS Grid 기반 레이아웃 스타일 (`src/styles/layout.css`)
   - ✅ Figma 스타일의 다크 테마 적용
+- ✅ **상태 관리 시스템 구현 완료**
+  - ✅ Zustand 라이브러리 추가
+  - ✅ 에디터 핵심 타입 정의 (`src/types/editor.ts`)
+  - ✅ 에디터 Store 구현 (`src/stores/editor-store.ts`)
+  - ✅ 패널 컴포넌트에 상태 관리 연결
+  - ✅ 요소 추가/삭제/선택 기본 기능 구현
+  - ✅ 캔버스에서 요소 렌더링 및 시각화
 
 ### 프로젝트 설정
 - **프레임워크**: Vite 6.0.5
 - **언어**: TypeScript 5.6.2
 - **UI 라이브러리**: React 18.3.1
+- **상태 관리**: Zustand 5.0.8
 - **린트/포맷**: ESLint 9.17.0, Prettier 3.4.2
 
 ## 주요 결정 사항
@@ -37,8 +45,8 @@
 - 다크 테마 색상 스킴 (#1e1e1e 배경, #252526 패널)
 
 ### 기술 스택
-- 상태 관리: 미정 (Zustand 또는 Context API 검토 예정)
-- 스타일링: ✅ 순수 CSS 사용 (현재 에디터)
+- 상태 관리: ✅ Zustand 5.0.8 사용
+- 스타일링: ✅ 순수 CSS 사용 (에디터 UI), React CSSProperties (요소 스타일)
 - 드래그 앤 드롭: 미정 (react-dnd 또는 네이티브 API 검토 예정)
 
 ### 결과물 형식 요구사항 (중요!)
@@ -59,16 +67,7 @@
 
 ## 다음 단계
 
-### 3단계: 상태 관리 설정 (우선순위 높음)
-- [ ] 상태 관리 라이브러리 선택 및 설정 (Zustand 권장)
-- [ ] 핵심 상태 타입 정의
-  - [ ] DOM 트리 구조 (페이지 요소 계층)
-  - [ ] 선택된 요소
-  - [ ] 캔버스 줌/팬 상태
-  - [ ] 에셋 리스트
-- [ ] 상태 관리 store 구현
-
-### 4단계: 좌측 패널 - 레이어 탭 구현
+### 4단계: 좌측 패널 - 레이어 탭 고도화 (우선순위 높음)
 - [ ] DOM 트리 시각화 컴포넌트
 - [ ] 요소 선택 기능
 - [ ] 요소 추가/삭제 기능
@@ -160,3 +159,51 @@
 **다음 작업 방향:**
 - 내보내기 기능 구현 시 인라인 스타일 변환 로직 필수
 - 에디터에서는 일반 CSS 사용, 내보내기 시 인라인으로 변환하는 전략 검토
+
+---
+
+### 4번 컨텍스트: Zustand 상태 관리 시스템 구현 (2025-10-18)
+
+**작업 내용:**
+- Zustand 5.0.8 라이브러리 설치
+- 에디터 핵심 타입 정의 파일 생성 (`src/types/editor.ts`)
+  - HTMLElementType: 지원하는 HTML 태그 타입 정의
+  - ElementStyle: React CSSProperties 타입 사용 (타입 안정성)
+  - HTMLElement: 에디터에서 사용하는 요소 구조
+  - Asset: 이미지/아이콘 리소스 타입
+  - CanvasState: 캔버스 줌/팬 상태
+  - EditorHistory: 실행 취소/다시 실행 히스토리 (TODO)
+- Zustand 기반 에디터 Store 구현 (`src/stores/editor-store.ts`)
+  - 요소 관리: addElement, updateElement, deleteElement, selectElement
+  - 에셋 관리: addAsset, deleteAsset
+  - 캔버스 관리: setZoom, setPan, resetCanvas
+  - 히스토리: undo, redo (미구현)
+- 패널 컴포넌트에 상태 관리 연결
+  - LeftPanel: 요소 목록 표시, 추가/삭제 버튼, 선택 기능
+  - CenterCanvas: 요소 렌더링, 선택 시 하이라이트
+  - RightPanel: 선택된 요소 속성 표시
+
+**주요 결정:**
+- Zustand 선택 이유: 간단한 API, 보일러플레이트 최소화, TypeScript 지원 우수
+- ElementStyle을 React.CSSProperties로 정의하여 타입 안정성 확보
+- 요소 삭제 시 자식 요소도 재귀적으로 삭제하는 로직 구현
+- 캔버스 줌 범위 제한 (0.1 ~ 3.0)
+
+**구현된 기능:**
+- 섹션 요소 추가 버튼 (테스트용)
+- 요소 클릭으로 선택
+- 선택된 요소 파란색 아웃라인으로 시각화
+- 요소 삭제 버튼
+- 선택된 요소 정보 우측 패널에 표시
+
+**커밋:**
+- `chore: Zustand 상태 관리 라이브러리 추가`
+- `feat: 에디터 핵심 타입 정의 추가`
+- `feat: Zustand 기반 에디터 상태 관리 Store 구현`
+- `feat: 패널 컴포넌트에 상태 관리 연결 및 기본 기능 구현`
+
+**다음 작업 방향:**
+- 다양한 HTML 요소 타입 추가 버튼 구현
+- 계층 구조 (부모-자식 관계) 시각화
+- 우측 패널에서 스타일 속성 편집 기능
+- HTML 내보내기 기능
