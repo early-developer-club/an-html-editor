@@ -44,6 +44,7 @@ interface EditorState {
 
   // 유틸리티
   clearAll: () => void
+  loadTemplate: (elements: HTMLElement[]) => void
 }
 
 const INITIAL_CANVAS_STATE: CanvasState = {
@@ -158,6 +159,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       assets: [],
       canvas: INITIAL_CANVAS_STATE,
       history: INITIAL_HISTORY,
+    })
+  },
+
+  loadTemplate: (elements) => {
+    set({
+      elements: elements,
+      selectedElementId: null,
     })
   },
 }))
