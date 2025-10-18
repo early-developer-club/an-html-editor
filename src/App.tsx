@@ -1,11 +1,10 @@
 import LeftPanel from './components/left-panel'
 import CenterCanvas from './components/center-canvas'
 import RightPanel from './components/right-panel'
-import './styles/layout.css'
 
 function App() {
   return (
-    <div className="editor-layout">
+    <div className="grid grid-cols-[280px_1fr_320px] h-screen w-screen overflow-hidden bg-editor-bg text-editor-text">
       <LeftPanel />
       <CenterCanvas />
       <RightPanel />
