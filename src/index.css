@@ -1,6 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-editor-bg: #1e1e1e;
+  --color-editor-panel: #252526;
+  --color-editor-panelHover: #2d2d30;
+  --color-editor-border: #3e3e42;
+  --color-editor-text: #cccccc;
+  --color-editor-textMuted: #858585;
+  --color-editor-accent: #0066cc;
+  --color-editor-accentHover: #094771;
+  --color-editor-danger: #c42b1c;
+  --color-editor-success: #107c10;
+}
 
 @layer base {
   * {
