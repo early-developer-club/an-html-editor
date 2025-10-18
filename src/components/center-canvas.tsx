@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { useEditorStore } from '../stores/editor-store'
 import type { HTMLElement } from '../types/editor'
 
@@ -5,6 +6,22 @@ function CenterCanvas() {
   const elements = useEditorStore((state) => state.elements)
   const selectedElementId = useEditorStore((state) => state.selectedElementId)
   const selectElement = useEditorStore((state) => state.selectElement)
+
+  // 요소 ref를 저장하는 Map
+  const elementRefsMap = useRef<Map<string, HTMLElement>>(new Map())
+
+  // 선택된 요소로 스크롤
+  useEffect(() => {
+    if (selectedElementId) {
+      const elementRef = elementRefsMap.current.get(selectedElementId)
+      if (elementRef) {
+        elementRef.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        })
+      }
+    }
+  }, [selectedElementId])
 
   const renderElement = (element: HTMLElement) => {
     const Tag = element.tagName as keyof JSX.IntrinsicElements
@@ -18,6 +35,11 @@ function CenterCanvas() {
       return (
         <Tag
           key={element.id}
+          ref={(el: HTMLImageElement | null) => {
+            if (el) {
+              elementRefsMap.current.set(element.id, el as unknown as HTMLElement)
+            }
+          }}
           src={element.src || ''}
           alt={element.alt || ''}
           onClick={(e: React.MouseEvent) => {
@@ -39,6 +61,11 @@ function CenterCanvas() {
       return (
         <Tag
           key={element.id}
+          ref={(el: HTMLAnchorElement | null) => {
+            if (el) {
+              elementRefsMap.current.set(element.id, el as unknown as HTMLElement)
+            }
+          }}
           href={element.href || '#'}
           onClick={(e: React.MouseEvent) => {
             e.preventDefault()
@@ -65,6 +92,11 @@ function CenterCanvas() {
     return (
       <Tag
         key={element.id}
+        ref={(el: any) => {
+          if (el) {
+            elementRefsMap.current.set(element.id, el)
+          }
+        }}
         onClick={(e: React.MouseEvent) => {
           e.stopPropagation()
           selectElement(element.id)
