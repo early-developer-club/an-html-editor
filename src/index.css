@@ -1,31 +1,43 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+@layer base {
+  * {
+    @apply m-0 p-0 box-border;
+  }
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  body {
+    @apply m-0 overflow-hidden;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+  #root {
+    @apply w-screen h-screen overflow-hidden;
+  }
 
-body {
-  margin: 0;
-  overflow: hidden;
-}
+  /* 커스텀 스크롤바 스타일 */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
 
-#root {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  ::-webkit-scrollbar-track {
+    @apply bg-editor-bg;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-editor-border rounded;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-editor-textMuted;
+  }
+
+  /* Firefox 스크롤바 */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #3e3e42 #1e1e1e;
+  }
 }
