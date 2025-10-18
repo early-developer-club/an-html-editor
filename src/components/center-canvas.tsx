@@ -8,7 +8,7 @@ function CenterCanvas() {
   const selectElement = useEditorStore((state) => state.selectElement)
 
   // 요소 ref를 저장하는 Map
-  const elementRefsMap = useRef<Map<string, HTMLElement>>(new Map())
+  const elementRefsMap = useRef<Map<string, Element>>(new Map())
 
   // 선택된 요소로 스크롤
   useEffect(() => {
@@ -35,9 +35,9 @@ function CenterCanvas() {
       return (
         <Tag
           key={element.id}
-          ref={(el: HTMLImageElement | null) => {
+          ref={(el: never) => {
             if (el) {
-              elementRefsMap.current.set(element.id, el as unknown as HTMLElement)
+              elementRefsMap.current.set(element.id, el as unknown as Element)
             }
           }}
           src={element.src || ''}
@@ -61,9 +61,9 @@ function CenterCanvas() {
       return (
         <Tag
           key={element.id}
-          ref={(el: HTMLAnchorElement | null) => {
+          ref={(el: never) => {
             if (el) {
-              elementRefsMap.current.set(element.id, el as unknown as HTMLElement)
+              elementRefsMap.current.set(element.id, el as unknown as Element)
             }
           }}
           href={element.href || '#'}
@@ -94,7 +94,7 @@ function CenterCanvas() {
         key={element.id}
         ref={(el: never) => {
           if (el) {
-            elementRefsMap.current.set(element.id, el as unknown as HTMLElement)
+            elementRefsMap.current.set(element.id, el as unknown as Element)
           }
         }}
         onClick={(e: React.MouseEvent) => {
@@ -141,9 +141,7 @@ function CenterCanvas() {
               boxShadow: '0 0 20px rgba(0,0,0,0.3)',
             }}
           >
-            {elements
-              .filter((el) => el.parentId === null)
-              .map(renderElement)}
+            {elements.filter((el) => el.parentId === null).map(renderElement)}
           </div>
         )}
       </div>
