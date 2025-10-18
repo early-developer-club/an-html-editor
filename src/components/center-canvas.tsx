@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useEditorStore } from '../stores/editor-store'
 import type { HTMLElement } from '../types/editor'
 
@@ -7,24 +7,19 @@ function CenterCanvas() {
   const selectedElementId = useEditorStore((state) => state.selectedElementId)
   const selectElement = useEditorStore((state) => state.selectElement)
 
-  // 요소 ref를 저장하는 Map
-  const elementRefsMap = useRef<Map<string, Element>>(new Map())
-
   // 선택된 요소로 스크롤
   useEffect(() => {
     if (selectedElementId) {
-      const elementRef = elementRefsMap.current.get(selectedElementId)
-      if (elementRef) {
-        elementRef.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        })
+      const element = document.querySelector(
+        `[data-element-id="${selectedElementId}"]`
+      )
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }
   }, [selectedElementId])
 
   const renderElement = (element: HTMLElement) => {
-    const Tag = element.tagName as keyof JSX.IntrinsicElements
     const isSelected = element.id === selectedElementId
 
     // 자식 요소 찾기
@@ -33,13 +28,9 @@ function CenterCanvas() {
     // img 태그 특수 처리
     if (element.tagName === 'img') {
       return (
-        <Tag
+        <img
           key={element.id}
-          ref={(el: never) => {
-            if (el) {
-              elementRefsMap.current.set(element.id, el as unknown as Element)
-            }
-          }}
+          data-element-id={element.id}
           src={element.src || ''}
           alt={element.alt || ''}
           onClick={(e: React.MouseEvent) => {
@@ -59,13 +50,9 @@ function CenterCanvas() {
     // a 태그 특수 처리
     if (element.tagName === 'a') {
       return (
-        <Tag
+        <a
           key={element.id}
-          ref={(el: never) => {
-            if (el) {
-              elementRefsMap.current.set(element.id, el as unknown as Element)
-            }
-          }}
+          data-element-id={element.id}
           href={element.href || '#'}
           onClick={(e: React.MouseEvent) => {
             e.preventDefault()
@@ -84,19 +71,16 @@ function CenterCanvas() {
             : children.length > 0
               ? children.map(renderElement)
               : null}
-        </Tag>
+        </a>
       )
     }
 
     // 일반 태그
+    const Tag = element.tagName as keyof JSX.IntrinsicElements
     return (
       <Tag
         key={element.id}
-        ref={(el: never) => {
-          if (el) {
-            elementRefsMap.current.set(element.id, el as unknown as Element)
-          }
-        }}
+        data-element-id={element.id}
         onClick={(e: React.MouseEvent) => {
           e.stopPropagation()
           selectElement(element.id)
