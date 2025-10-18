@@ -49,15 +49,19 @@
 
 .canvas-content {
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding: 40px 20px;
 }
 
 .canvas-placeholder {
   text-align: center;
   color: #6e6e6e;
+  padding: 60px 20px;
+  margin: auto;
 }
 
 .canvas-placeholder h2 {

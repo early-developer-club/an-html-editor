@@ -47,12 +47,13 @@ function CenterCanvas() {
           </div>
         ) : (
           <div
+            onClick={() => selectElement(null)}
             style={{
               width: '100%',
               maxWidth: '800px',
               backgroundColor: 'white',
-              minHeight: '600px',
-              padding: '20px',
+              minHeight: '100vh',
+              boxShadow: '0 0 20px rgba(0,0,0,0.3)',
             }}
           >
             {elements
