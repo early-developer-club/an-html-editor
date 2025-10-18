@@ -29,7 +29,8 @@ function LeftPanel() {
     type: HTMLElementType,
     tagName: string,
     defaultContent: string,
-    defaultStyle: React.CSSProperties = {}
+    defaultStyle: React.CSSProperties = {},
+    additionalProps: Partial<HTMLElement> = {}
   ): HTMLElement => {
     return {
       id: `element-${Date.now()}`,
@@ -39,6 +40,7 @@ function LeftPanel() {
       style: defaultStyle,
       children: [],
       parentId: null,
+      ...additionalProps,
     }
   }
 
@@ -105,13 +107,30 @@ function LeftPanel() {
     }
 
     const config = elementConfigs[type]
-    const newElement = createElement(
-      type,
-      config.tagName,
-      config.content,
-      config.style
-    )
-    addElement(newElement)
+
+    // img 태그는 특별 처리 (src, alt 속성 추가)
+    if (type === 'img') {
+      const newElement = createElement(
+        type,
+        config.tagName,
+        config.content,
+        config.style,
+        {
+          src: 'https://picsum.photos/seed/placeholder/400/300',
+          alt: '이미지 설명을 입력하세요',
+        }
+      )
+      addElement(newElement)
+    } else {
+      const newElement = createElement(
+        type,
+        config.tagName,
+        config.content,
+        config.style
+      )
+      addElement(newElement)
+    }
+
     setShowAddMenu(false)
   }
 
@@ -290,6 +309,7 @@ function LeftPanel() {
                 { type: 'h2' as const, label: '제목 2 (h2)' },
                 { type: 'h3' as const, label: '제목 3 (h3)' },
                 { type: 'p' as const, label: '텍스트 (p)' },
+                { type: 'img' as const, label: '이미지 (img)' },
                 { type: 'button' as const, label: '버튼 (button)' },
               ].map(({ type, label }) => (
                 <button

@@ -21,6 +21,12 @@ function RightPanel() {
     }
   }
 
+  const handleAttributeChange = (attribute: string, value: string) => {
+    if (selectedElement) {
+      updateElement(selectedElement.id, { [attribute]: value })
+    }
+  }
+
   const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '6px 8px',
@@ -62,20 +68,64 @@ function RightPanel() {
             </div>
 
             {/* 텍스트 내용 */}
-            <div style={sectionStyle}>
-              <label style={labelStyle}>텍스트 내용</label>
-              <textarea
-                value={selectedElement.textContent || ''}
-                onChange={(e) => handleTextContentChange(e.target.value)}
-                style={{
-                  ...inputStyle,
-                  minHeight: '80px',
-                  resize: 'vertical',
-                  fontFamily: 'inherit',
-                }}
-                placeholder="텍스트를 입력하세요"
-              />
-            </div>
+            {selectedElement.tagName !== 'img' && (
+              <div style={sectionStyle}>
+                <label style={labelStyle}>텍스트 내용</label>
+                <textarea
+                  value={selectedElement.textContent || ''}
+                  onChange={(e) => handleTextContentChange(e.target.value)}
+                  style={{
+                    ...inputStyle,
+                    minHeight: '80px',
+                    resize: 'vertical',
+                    fontFamily: 'inherit',
+                  }}
+                  placeholder="텍스트를 입력하세요"
+                />
+              </div>
+            )}
+
+            {/* 이미지 속성 (img 태그 전용) */}
+            {selectedElement.tagName === 'img' && (
+              <div style={sectionStyle}>
+                <h4 style={{ fontSize: '12px', marginBottom: '8px', color: '#cccccc' }}>
+                  이미지 속성
+                </h4>
+                <label style={labelStyle}>이미지 URL (src)</label>
+                <input
+                  type="text"
+                  value={selectedElement.src || ''}
+                  onChange={(e) => handleAttributeChange('src', e.target.value)}
+                  style={inputStyle}
+                  placeholder="https://example.com/image.jpg"
+                />
+                <label style={labelStyle}>대체 텍스트 (alt)</label>
+                <input
+                  type="text"
+                  value={selectedElement.alt || ''}
+                  onChange={(e) => handleAttributeChange('alt', e.target.value)}
+                  style={inputStyle}
+                  placeholder="이미지 설명"
+                />
+              </div>
+            )}
+
+            {/* 링크 속성 (a 태그 전용) */}
+            {selectedElement.tagName === 'a' && (
+              <div style={sectionStyle}>
+                <h4 style={{ fontSize: '12px', marginBottom: '8px', color: '#cccccc' }}>
+                  링크 속성
+                </h4>
+                <label style={labelStyle}>링크 URL (href)</label>
+                <input
+                  type="text"
+                  value={selectedElement.href || ''}
+                  onChange={(e) => handleAttributeChange('href', e.target.value)}
+                  style={inputStyle}
+                  placeholder="https://example.com"
+                />
+              </div>
+            )}
 
             {/* 레이아웃 */}
             <div style={sectionStyle}>
