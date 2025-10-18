@@ -36,6 +36,11 @@ export interface HTMLElement {
   tagName: string // 실제 HTML 태그명
   textContent?: string
   attributes?: Record<string, string>
+  // 이미지 전용 속성
+  src?: string // 이미지 URL (img, video 태그)
+  alt?: string // 대체 텍스트 (img 태그)
+  // 링크 전용 속성
+  href?: string // 링크 URL (a 태그)
   style: ElementStyle
   children: HTMLElement[]
   parentId: string | null
