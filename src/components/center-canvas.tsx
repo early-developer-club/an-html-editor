@@ -10,6 +10,9 @@ function CenterCanvas() {
     const Tag = element.tagName as keyof JSX.IntrinsicElements
     const isSelected = element.id === selectedElementId
 
+    // 자식 요소 찾기
+    const children = elements.filter((el) => el.parentId === element.id)
+
     return (
       <Tag
         key={element.id}
@@ -24,7 +27,12 @@ function CenterCanvas() {
           position: 'relative',
         }}
       >
-        {element.textContent || element.children.map(renderElement)}
+        {/* 텍스트 컨텐츠가 있으면 표시, 없으면 자식 요소 렌더링 */}
+        {element.textContent
+          ? element.textContent
+          : children.length > 0
+            ? children.map(renderElement)
+            : null}
       </Tag>
     )
   }
