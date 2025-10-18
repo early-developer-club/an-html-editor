@@ -28,6 +28,7 @@ interface EditorState {
   updateElement: (id: string, updates: Partial<HTMLElement>) => void
   deleteElement: (id: string) => void
   selectElement: (id: string | null) => void
+  moveElement: (elementId: string, newParentId: string | null) => void
 
   // 에셋 관련
   addAsset: (asset: Asset) => void
@@ -111,6 +112,37 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   selectElement: (id) => {
     set({ selectedElementId: id })
+  },
+
+  moveElement: (elementId, newParentId) => {
+    set((state) => {
+      // 자기 자신을 부모로 설정할 수 없음
+      if (elementId === newParentId) {
+        return state
+      }
+
+      // 순환 참조 방지: newParentId가 elementId의 자손인지 확인
+      const isDescendant = (parentId: string, targetId: string): boolean => {
+        const element = state.elements.find((el) => el.id === parentId)
+        if (!element) return false
+        if (element.parentId === targetId) return true
+        if (element.parentId) {
+          return isDescendant(element.parentId, targetId)
+        }
+        return false
+      }
+
+      if (newParentId && isDescendant(newParentId, elementId)) {
+        console.warn('순환 참조를 만들 수 없습니다.')
+        return state
+      }
+
+      return {
+        elements: state.elements.map((el) =>
+          el.id === elementId ? { ...el, parentId: newParentId } : el
+        ),
+      }
+    })
   },
 
   addAsset: (asset) => {

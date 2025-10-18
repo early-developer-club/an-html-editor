@@ -10,7 +10,10 @@ function LeftPanel() {
   const selectElement = useEditorStore((state) => state.selectElement)
   const deleteElement = useEditorStore((state) => state.deleteElement)
   const loadTemplate = useEditorStore((state) => state.loadTemplate)
+  const moveElement = useEditorStore((state) => state.moveElement)
   const [showAddMenu, setShowAddMenu] = useState(false)
+  const [draggedElementId, setDraggedElementId] = useState<string | null>(null)
+  const [dragOverElementId, setDragOverElementId] = useState<string | null>(null)
 
   const handleLoadTemplate = () => {
     if (
@@ -112,27 +115,83 @@ function LeftPanel() {
     setShowAddMenu(false)
   }
 
+  // 드래그 앤 드롭 핸들러
+  const handleDragStart = (e: React.DragEvent, elementId: string) => {
+    setDraggedElementId(elementId)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const handleDragOver = (e: React.DragEvent, elementId: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (draggedElementId !== elementId) {
+      setDragOverElementId(elementId)
+    }
+  }
+
+  const handleDragEnd = () => {
+    setDraggedElementId(null)
+    setDragOverElementId(null)
+  }
+
+  const handleDrop = (e: React.DragEvent, targetElementId: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (draggedElementId && draggedElementId !== targetElementId) {
+      // targetElementId를 부모로 설정
+      moveElement(draggedElementId, targetElementId)
+    }
+
+    setDraggedElementId(null)
+    setDragOverElementId(null)
+  }
+
+  // 루트 영역 드롭 (최상위로 이동)
+  const handleDropToRoot = (e: React.DragEvent) => {
+    e.preventDefault()
+    if (draggedElementId) {
+      moveElement(draggedElementId, null)
+    }
+    setDraggedElementId(null)
+    setDragOverElementId(null)
+  }
+
   // 계층 구조 렌더링 함수
   const renderElement = (element: HTMLElement, depth: number = 0) => {
     const hasChildren =
       elements.filter((el) => el.parentId === element.id).length > 0
+    const isDragging = draggedElementId === element.id
+    const isDragOver = dragOverElementId === element.id
 
     return (
       <div key={element.id}>
         <div
+          draggable
+          onDragStart={(e) => handleDragStart(e, element.id)}
+          onDragOver={(e) => handleDragOver(e, element.id)}
+          onDragEnd={handleDragEnd}
+          onDrop={(e) => handleDrop(e, element.id)}
           onClick={() => selectElement(element.id)}
           style={{
             padding: '6px 8px',
             paddingLeft: `${8 + depth * 16}px`,
             marginBottom: '2px',
-            backgroundColor:
-              selectedElementId === element.id ? '#094771' : '#2d2d30',
+            backgroundColor: isDragging
+              ? '#444444'
+              : isDragOver
+                ? '#0066cc33'
+                : selectedElementId === element.id
+                  ? '#094771'
+                  : '#2d2d30',
             borderRadius: '4px',
-            cursor: 'pointer',
+            cursor: isDragging ? 'grabbing' : 'grab',
             fontSize: '12px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            opacity: isDragging ? 0.5 : 1,
+            border: isDragOver ? '2px dashed #0066cc' : '2px solid transparent',
           }}
         >
           <span>
@@ -266,10 +325,40 @@ function LeftPanel() {
             요소가 없습니다. 샘플 템플릿을 불러오거나 요소를 추가하세요.
           </p>
         ) : (
-          <div>
+          <div
+            onDragOver={(e) => {
+              e.preventDefault()
+              setDragOverElementId('root')
+            }}
+            onDragLeave={() => setDragOverElementId(null)}
+            onDrop={handleDropToRoot}
+            style={{
+              minHeight: '100px',
+              padding: '4px',
+              borderRadius: '4px',
+              backgroundColor:
+                dragOverElementId === 'root' ? '#0066cc11' : 'transparent',
+              border:
+                dragOverElementId === 'root'
+                  ? '2px dashed #0066cc'
+                  : '2px dashed transparent',
+            }}
+          >
             {elements
               .filter((el) => el.parentId === null)
               .map((element) => renderElement(element))}
+            {dragOverElementId === 'root' && (
+              <div
+                style={{
+                  padding: '8px',
+                  color: '#0066cc',
+                  fontSize: '11px',
+                  textAlign: 'center',
+                }}
+              >
+                여기에 놓으면 최상위 요소가 됩니다
+              </div>
+            )}
           </div>
         )}
       </div>
