@@ -377,3 +377,64 @@
   - 단일 HTML 파일 다운로드
 - 이미지 업로드 및 img 태그 src 속성 편집
 - 요소 복사/붙여넣기 기능
+
+---
+
+### 8번 컨텍스트: 이미지 및 링크 기능 추가 (2025-10-18)
+
+**작업 내용:**
+- HTMLElement 타입에 이미지 및 링크 속성 추가 (`src/types/editor.ts`)
+  - `src`: 이미지 URL (img, video 태그)
+  - `alt`: 대체 텍스트 (img 태그)
+  - `href`: 링크 URL (a 태그)
+- 샘플 템플릿에 실제 이미지 추가 (`src/utils/sample-templates.ts`)
+  - 스켈레톤 div → 실제 img 태그로 변경
+  - picsum.photos 공개 이미지 서비스 사용
+  - 메인 이미지: https://picsum.photos/seed/earbuds-main/600/600
+  - 갤러리 이미지 3개: 800x400 (착용, 디테일, 색상 옵션)
+  - 모든 이미지에 적절한 alt 텍스트 추가
+- CenterCanvas에서 img 및 a 태그 렌더링 특수 처리 (`src/components/center-canvas.tsx`)
+  - img 태그: src와 alt 속성 렌더링
+  - a 태그: href 속성 추가, 클릭 기본 동작 방지 (preventDefault)
+  - 태그별 조건부 렌더링 로직 구현
+- RightPanel 이미지 및 링크 편집 기능 (`src/components/right-panel.tsx`)
+  - img 태그 선택 시 "이미지 속성" 섹션 표시
+  - src (이미지 URL), alt (대체 텍스트) 실시간 편집
+  - a 태그 선택 시 "링크 속성" 섹션 표시 (href)
+  - 텍스트 내용 섹션은 img 태그에서 조건부 숨김
+  - handleAttributeChange 함수 추가
+- LeftPanel 이미지 추가 기능 (`src/components/left-panel.tsx`)
+  - 요소 추가 메뉴에 "이미지 (img)" 추가 (10개 요소)
+  - img 요소 생성 시 기본 placeholder 이미지 자동 설정
+  - createElement 함수에 additionalProps 파라미터 추가
+
+**주요 결정:**
+- picsum.photos 공개 이미지 서비스 사용 (무료, 안정적)
+- seed 파라미터로 일관된 이미지 제공 (earbuds-main, earbuds-wearing 등)
+- img 태그는 자식 요소를 가질 수 없으므로 자체 닫힘 태그로 처리
+- a 태그 클릭 시 실제 링크 이동 방지 (에디터 내에서만 선택)
+- 이미지 URL과 대체 텍스트를 별도 속성으로 관리 (attributes 대신)
+
+**구현된 기능:**
+- 실제 이미지가 포함된 샘플 템플릿
+- 이미지 URL 실시간 편집 (RightPanel)
+- 이미지 대체 텍스트 편집
+- 링크 URL 편집
+- 요소 추가 메뉴에서 이미지 직접 추가
+- 캔버스에서 이미지 시각적 렌더링
+- 이미지 선택 및 속성 편집
+
+**커밋:**
+- `feat(types): HTMLElement에 이미지 및 링크 속성 추가`
+- `feat(template): 샘플 템플릿에 실제 이미지 추가`
+- `feat(canvas): img 및 a 태그 렌더링 특수 처리 추가`
+- `feat(editor): 이미지 및 링크 편집 기능 추가`
+
+**다음 작업 방향:**
+- HTML 내보내기 기능 구현 (최우선)
+  - img 태그 src, alt 속성 포함
+  - a 태그 href 속성 포함
+  - 계층 구조를 올바른 HTML로 변환
+- 이미지 업로드 기능 (파일 → Base64 또는 URL)
+- 요소 복사/붙여넣기
+- 실행 취소/다시 실행 (Undo/Redo)
