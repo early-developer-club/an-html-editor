@@ -193,9 +193,7 @@ function LeftPanel() {
           onDrop={(e) => handleDrop(e, element.id)}
           onClick={() => selectElement(element.id)}
           style={{
-            padding: '6px 8px',
             paddingLeft: `${8 + depth * 16}px`,
-            marginBottom: '2px',
             backgroundColor: isDragging
               ? '#444444'
               : isDragOver
@@ -203,15 +201,10 @@ function LeftPanel() {
                 : selectedElementId === element.id
                   ? '#094771'
                   : '#2d2d30',
-            borderRadius: '4px',
-            cursor: isDragging ? 'grabbing' : 'grab',
-            fontSize: '12px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
             opacity: isDragging ? 0.5 : 1,
             border: isDragOver ? '2px dashed #0066cc' : '2px solid transparent',
           }}
+          className="flex items-center justify-between p-2 mb-0.5 text-xs rounded cursor-grab"
         >
           <span>
             {hasChildren && '▾ '}
@@ -222,15 +215,7 @@ function LeftPanel() {
               e.stopPropagation()
               deleteElement(element.id)
             }}
-            style={{
-              padding: '2px 6px',
-              backgroundColor: '#c42b1c',
-              color: 'white',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              fontSize: '10px',
-            }}
+            className="px-2 py-0.5 text-xs text-white border-none rounded cursor-pointer bg-editor-danger"
           >
             삭제
           </button>
@@ -244,62 +229,30 @@ function LeftPanel() {
   }
 
   return (
-    <div className="left-panel">
-      <div className="panel-header">레이어</div>
-      <div className="panel-content">
+    <div className="flex flex-col overflow-hidden border-r bg-editor-panel border-editor-border">
+      <div className="p-3 px-4 font-semibold border-b text-sm bg-editor-panelHover text-editor-text border-editor-border">
+        레이어
+      </div>
+      <div className="flex-1 p-4 overflow-auto">
         {/* 샘플 템플릿 버튼 */}
         <button
           onClick={handleLoadTemplate}
-          style={{
-            width: '100%',
-            padding: '10px',
-            marginBottom: '8px',
-            backgroundColor: '#107c10',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '13px',
-            fontWeight: 'bold',
-          }}
+          className="w-full p-2 mb-2 font-bold text-white border-none rounded cursor-pointer bg-editor-success text-sm"
         >
           📄 샘플 템플릿 불러오기
         </button>
 
         {/* 요소 추가 버튼 */}
-        <div style={{ position: 'relative', marginBottom: '16px' }}>
+        <div className="relative mb-4">
           <button
             onClick={() => setShowAddMenu(!showAddMenu)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              backgroundColor: '#0066cc',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '13px',
-            }}
+            className="w-full p-2 text-sm text-white border-none rounded cursor-pointer bg-editor-accent"
           >
             + 요소 추가
           </button>
 
           {showAddMenu && (
-            <div
-              style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                right: 0,
-                backgroundColor: '#2d2d30',
-                border: '1px solid #3e3e42',
-                borderRadius: '4px',
-                marginTop: '4px',
-                maxHeight: '300px',
-                overflowY: 'auto',
-                zIndex: 10,
-              }}
-            >
+            <div className="absolute top-full left-0 right-0 mt-1 max-h-[300px] overflow-y-auto z-10 rounded border bg-editor-panelHover border-editor-border">
               {[
                 { type: 'section' as const, label: '섹션 (section)' },
                 { type: 'header' as const, label: '헤더 (header)' },
@@ -315,22 +268,7 @@ function LeftPanel() {
                 <button
                   key={type}
                   onClick={() => handleAddElement(type)}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    backgroundColor: 'transparent',
-                    color: '#cccccc',
-                    border: 'none',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = '#3e3e42')
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = 'transparent')
-                  }
+                  className="w-full px-3 py-2 text-xs text-left text-white border-none cursor-pointer bg-transparent hover:bg-editor-border"
                 >
                   {label}
                 </button>
@@ -341,7 +279,7 @@ function LeftPanel() {
 
         {/* 요소 목록 */}
         {elements.length === 0 ? (
-          <p style={{ color: '#858585', fontSize: '13px' }}>
+          <p className="text-sm text-editor-textMuted">
             요소가 없습니다. 샘플 템플릿을 불러오거나 요소를 추가하세요.
           </p>
         ) : (
@@ -352,30 +290,13 @@ function LeftPanel() {
             }}
             onDragLeave={() => setDragOverElementId(null)}
             onDrop={handleDropToRoot}
-            style={{
-              minHeight: '100px',
-              padding: '4px',
-              borderRadius: '4px',
-              backgroundColor:
-                dragOverElementId === 'root' ? '#0066cc11' : 'transparent',
-              border:
-                dragOverElementId === 'root'
-                  ? '2px dashed #0066cc'
-                  : '2px dashed transparent',
-            }}
+            className={`p-1 min-h-[100px] rounded ${dragOverElementId === 'root' ? 'border-2 border-dashed border-editor-accent bg-editor-accent/10' : 'border-2 border-dashed border-transparent'}`}
           >
             {elements
               .filter((el) => el.parentId === null)
               .map((element) => renderElement(element))}
             {dragOverElementId === 'root' && (
-              <div
-                style={{
-                  padding: '8px',
-                  color: '#0066cc',
-                  fontSize: '11px',
-                  textAlign: 'center',
-                }}
-              >
+              <div className="p-2 text-xs text-center text-editor-accent">
                 여기에 놓으면 최상위 요소가 됩니다
               </div>
             )}
