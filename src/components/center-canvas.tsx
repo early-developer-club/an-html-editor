@@ -13,6 +13,55 @@ function CenterCanvas() {
     // 자식 요소 찾기
     const children = elements.filter((el) => el.parentId === element.id)
 
+    // img 태그 특수 처리
+    if (element.tagName === 'img') {
+      return (
+        <Tag
+          key={element.id}
+          src={element.src || ''}
+          alt={element.alt || ''}
+          onClick={(e: React.MouseEvent) => {
+            e.stopPropagation()
+            selectElement(element.id)
+          }}
+          style={{
+            ...element.style,
+            outline: isSelected ? '2px solid #0066cc' : 'none',
+            cursor: 'pointer',
+            position: 'relative',
+          }}
+        />
+      )
+    }
+
+    // a 태그 특수 처리
+    if (element.tagName === 'a') {
+      return (
+        <Tag
+          key={element.id}
+          href={element.href || '#'}
+          onClick={(e: React.MouseEvent) => {
+            e.preventDefault()
+            e.stopPropagation()
+            selectElement(element.id)
+          }}
+          style={{
+            ...element.style,
+            outline: isSelected ? '2px solid #0066cc' : 'none',
+            cursor: 'pointer',
+            position: 'relative',
+          }}
+        >
+          {element.textContent
+            ? element.textContent
+            : children.length > 0
+              ? children.map(renderElement)
+              : null}
+        </Tag>
+      )
+    }
+
+    // 일반 태그
     return (
       <Tag
         key={element.id}
