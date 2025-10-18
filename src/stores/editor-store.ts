@@ -59,7 +59,7 @@ const INITIAL_HISTORY: EditorHistory = {
   future: [],
 }
 
-export const useEditorStore = create<EditorState>((set, get) => ({
+export const useEditorStore = create<EditorState>((set) => ({
   // Initial state
   elements: [],
   selectedElementId: null,
