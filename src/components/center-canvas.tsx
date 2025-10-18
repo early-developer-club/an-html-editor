@@ -92,9 +92,9 @@ function CenterCanvas() {
     return (
       <Tag
         key={element.id}
-        ref={(el: any) => {
+        ref={(el: never) => {
           if (el) {
-            elementRefsMap.current.set(element.id, el)
+            elementRefsMap.current.set(element.id, el as unknown as HTMLElement)
           }
         }}
         onClick={(e: React.MouseEvent) => {
