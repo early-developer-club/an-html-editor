@@ -72,11 +72,15 @@
 
 ## 6\. AI 협업 가이드라인
 
-  * **중요:** **커밋 메시지에 AI 이름을 포함하지 않습니다.**
+  * **중요:** **커밋 메시지에 AI 관련 내용을 일체 포함하지 않습니다.**
+  * **절대 금지:**
+      * Claude Code가 자동으로 생성하는 "🤖 Generated with [Claude Code]" 및 "Co-Authored-By: Claude" 메시지를 포함하지 않습니다.
+      * AI 이름(Claude, Gemini, ChatGPT 등)을 커밋 메시지에 언급하지 않습니다.
   * AI가 코드를 생성했거나 수정을 도왔더라도, 커밋 메시지는 해당 작업의 **내용과 목적**에만 집중합니다.
   * **나쁜 예 (X):**
       * `feat: Gemini가 생성한 새 컴포넌트 추가`
       * `fix: AI가 수정한 버그`
+      * 커밋 메시지 끝에 `🤖 Generated with [Claude Code]` 또는 `Co-Authored-By: Claude <noreply@anthropic.com>` 포함
   * **좋은 예 (O):**
       * `feat: 좌측 패널에 ImageAssetTab 컴포넌트 추가`
       * `fix: 속성 관리자에서 텍스트 정렬 문제 해결`
