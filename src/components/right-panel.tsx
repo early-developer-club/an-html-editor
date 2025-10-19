@@ -1,7 +1,6 @@
 import { useEditorStore } from '../stores/editor-store'
 import SpacingInput from './spacing-input'
-import SunIcon from './sun-icon'
-import MoonIcon from './moon-icon'
+import { Sun, Moon } from 'lucide-react'
 
 function RightPanel() {
   const selectedElementId = useEditorStore((state) => state.selectedElementId)
@@ -43,7 +42,7 @@ function RightPanel() {
           className="p-1.5 border rounded hover:bg-opacity-80 bg-item-hover border-panel-border text-text-primary"
           title={`${canvasTheme === 'dark' ? '밝은' : '어두운'} 테마로 전환`}
         >
-          {canvasTheme === 'dark' ? <SunIcon /> : <MoonIcon />}
+          {canvasTheme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
         </button>
       </div>
       <div className="flex-1 p-4 overflow-auto text-text-primary">

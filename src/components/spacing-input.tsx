@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import LinkedIcon from './linked-icon';
-import UnlinkedIcon from './unlinked-icon';
+import { Link2, Unlink2 } from 'lucide-react';
 
 interface SpacingInputProps {
   label: string;
@@ -91,7 +90,7 @@ const SpacingInput = ({ label, value, onChange }: SpacingInputProps) => {
       </label>
       <div className="flex items-center space-x-2">
         <button onClick={handleModeChange} className="p-1 text-xs rounded bg-button-bg text-text-primary">
-          {mode === 'all' ? <LinkedIcon /> : <UnlinkedIcon />}
+          {mode === 'all' ? <Link2 size={16} /> : <Unlink2 size={16} />}
         </button>
         {mode === 'all' ? (
           <input
