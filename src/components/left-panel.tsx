@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useEditorStore } from '../stores/editor-store'
 import type { HTMLElement, HTMLElementType } from '../types/editor'
 import { SAMPLE_TEMPLATE } from '../utils/sample-templates'
-import { Download } from 'lucide-react'
+import { Download, Layers, FileCode } from 'lucide-react'
 
 function LeftPanel() {
   const elements = useEditorStore((state) => state.elements)
@@ -13,6 +13,7 @@ function LeftPanel() {
   const loadTemplate = useEditorStore((state) => state.loadTemplate)
   const moveElement = useEditorStore((state) => state.moveElement)
   const reorderElements = useEditorStore((state) => state.reorderElements)
+  const [activeTab, setActiveTab] = useState<'template' | 'layers'>('layers')
   const [showAddMenu, setShowAddMenu] = useState(false)
   const [draggedElementId, setDraggedElementId] = useState<string | null>(null)
   const [dragOverElementId, setDragOverElementId] = useState<string | null>(null)
@@ -288,7 +289,6 @@ ${bodyContent}
       // 형제로 삽입 (before 또는 after)
       const newElements = [...elements]
       const draggedIndex = newElements.findIndex((el) => el.id === draggedElementId)
-      const targetIndex = newElements.findIndex((el) => el.id === targetElementId)
 
       // 드래그된 요소 제거
       const [removed] = newElements.splice(draggedIndex, 1)
@@ -384,28 +384,59 @@ ${bodyContent}
 
   return (
     <div className="flex flex-col overflow-hidden border-r bg-panel-bg border-panel-border">
-      <div className="p-3 px-4 font-semibold border-b text-sm bg-panel-header text-text-primary border-panel-border">
-        레이어
+      {/* 탭 헤더 */}
+      <div className="flex border-b bg-panel-header border-panel-border">
+        <button
+          onClick={() => setActiveTab('template')}
+          className={`flex-1 flex items-center justify-center gap-2 p-3 text-sm font-semibold border-r border-panel-border ${
+            activeTab === 'template'
+              ? 'bg-panel-bg text-text-primary'
+              : 'bg-panel-header text-text-muted hover:bg-item-hover'
+          }`}
+        >
+          <FileCode size={16} />
+          템플릿
+        </button>
+        <button
+          onClick={() => setActiveTab('layers')}
+          className={`flex-1 flex items-center justify-center gap-2 p-3 text-sm font-semibold ${
+            activeTab === 'layers'
+              ? 'bg-panel-bg text-text-primary'
+              : 'bg-panel-header text-text-muted hover:bg-item-hover'
+          }`}
+        >
+          <Layers size={16} />
+          레이어
+        </button>
       </div>
+
       <div className="flex-1 p-4 overflow-auto">
-        {/* 샘플 템플릿 버튼 */}
-        <button
-          onClick={handleLoadTemplate}
-          className="w-full p-2 mb-2 font-bold text-white border-none rounded cursor-pointer bg-green-600 hover:bg-green-700 text-sm"
-        >
-          📄 샘플 템플릿 불러오기
-        </button>
+        {/* 템플릿 탭 */}
+        {activeTab === 'template' && (
+          <div>
+            {/* 샘플 템플릿 버튼 */}
+            <button
+              onClick={handleLoadTemplate}
+              className="w-full p-2 mb-2 font-bold text-white border-none rounded cursor-pointer bg-green-600 hover:bg-green-700 text-sm"
+            >
+              📄 샘플 템플릿 불러오기
+            </button>
 
-        {/* HTML 다운로드 버튼 */}
-        <button
-          onClick={handleDownloadHTML}
-          className="w-full p-2 mb-2 font-bold text-white border-none rounded cursor-pointer bg-purple-600 hover:bg-purple-700 text-sm flex items-center justify-center gap-2"
-        >
-          <Download size={16} />
-          HTML 다운로드
-        </button>
+            {/* HTML 다운로드 버튼 */}
+            <button
+              onClick={handleDownloadHTML}
+              className="w-full p-2 mb-2 font-bold text-white border-none rounded cursor-pointer bg-purple-600 hover:bg-purple-700 text-sm flex items-center justify-center gap-2"
+            >
+              <Download size={16} />
+              HTML 다운로드
+            </button>
+          </div>
+        )}
 
-        {/* 요소 추가 버튼 */}
+        {/* 레이어 탭 */}
+        {activeTab === 'layers' && (
+          <>
+            {/* 요소 추가 버튼 */}
         <div className="relative mb-4">
           <button
             onClick={() => setShowAddMenu(!showAddMenu)}
@@ -464,6 +495,8 @@ ${bodyContent}
               </div>
             )}
           </div>
+        )}
+          </>
         )}
       </div>
     </div>
