@@ -1,5 +1,7 @@
 import { useEditorStore } from '../stores/editor-store'
 import SpacingInput from './spacing-input'
+import SunIcon from './sun-icon'
+import MoonIcon from './moon-icon'
 
 function RightPanel() {
   const selectedElementId = useEditorStore((state) => state.selectedElementId)
@@ -30,21 +32,48 @@ function RightPanel() {
     }
   }
 
+  const inputStyle: React.CSSProperties = {
+    backgroundColor: canvasTheme === 'dark' ? '#3c3c3c' : '#ffffff',
+    color: canvasTheme === 'dark' ? '#cccccc' : '#333333',
+    borderColor: canvasTheme === 'dark' ? '#555555' : '#d0d0d0',
+  }
+
   return (
-    <div className="flex flex-col overflow-hidden border-l bg-editor-panel border-editor-border">
-      <div className="flex items-center justify-between p-3 px-4 font-semibold border-b text-sm bg-editor-panelHover text-editor-text border-editor-border">
+    <div
+      className="flex flex-col overflow-hidden border-l border-editor-border"
+      style={{
+        backgroundColor: canvasTheme === 'dark' ? '#252526' : '#f3f3f3',
+      }}
+    >
+      <div
+        className="flex items-center justify-between p-3 px-4 font-semibold border-b text-sm border-editor-border"
+        style={{
+          backgroundColor: canvasTheme === 'dark' ? '#2d2d30' : '#e8e8e8',
+          color: canvasTheme === 'dark' ? '#cccccc' : '#333333',
+        }}
+      >
         <span>속성</span>
         <button
           onClick={() =>
             setCanvasTheme(canvasTheme === 'dark' ? 'light' : 'dark')
           }
-          className="px-2 py-1 text-xs border rounded bg-editor-panel border-editor-border hover:bg-editor-border"
+          className="p-1.5 border rounded hover:bg-opacity-80"
+          style={{
+            backgroundColor: canvasTheme === 'dark' ? '#3e3e42' : '#d4d4d4',
+            borderColor: canvasTheme === 'dark' ? '#555555' : '#c0c0c0',
+            color: canvasTheme === 'dark' ? '#cccccc' : '#333333',
+          }}
           title={`${canvasTheme === 'dark' ? '밝은' : '어두운'} 테마로 전환`}
         >
-          {canvasTheme === 'dark' ? '☀️' : '🌙'}
+          {canvasTheme === 'dark' ? <SunIcon /> : <MoonIcon />}
         </button>
       </div>
-      <div className="flex-1 p-4 overflow-auto">
+      <div
+        className="flex-1 p-4 overflow-auto"
+        style={{
+          color: canvasTheme === 'dark' ? '#cccccc' : '#333333',
+        }}
+      >
         {selectedElement ? (
           <div>
             {/* 기본 정보 */}
@@ -66,7 +95,8 @@ function RightPanel() {
                 <textarea
                   value={selectedElement.textContent || ''}
                   onChange={(e) => handleTextContentChange(e.target.value)}
-                  className="w-full p-2 text-xs rounded resize-y min-h-20 bg-editor-panelHover text-editor-text border-editor-border font-inherit"
+                  className="w-full p-2 text-xs rounded resize-y min-h-20 border font-inherit"
+                  style={inputStyle}
                   placeholder="텍스트를 입력하세요"
                 />
               </div>
@@ -85,7 +115,8 @@ function RightPanel() {
                   type="text"
                   value={selectedElement.src || ''}
                   onChange={(e) => handleAttributeChange('src', e.target.value)}
-                  className="w-full p-2 text-xs rounded bg-editor-panelHover text-editor-text border-editor-border"
+                  className="w-full p-2 text-xs rounded border"
+                  style={inputStyle}
                   placeholder="https://example.com/image.jpg"
                 />
                 <label className="block mt-3 mb-1 text-xs text-editor-textMuted">
@@ -95,7 +126,8 @@ function RightPanel() {
                   type="text"
                   value={selectedElement.alt || ''}
                   onChange={(e) => handleAttributeChange('alt', e.target.value)}
-                  className="w-full p-2 text-xs rounded bg-editor-panelHover text-editor-text border-editor-border"
+                  className="w-full p-2 text-xs rounded border"
+                  style={inputStyle}
                   placeholder="이미지 설명"
                 />
               </div>
@@ -114,7 +146,8 @@ function RightPanel() {
                   type="text"
                   value={selectedElement.href || ''}
                   onChange={(e) => handleAttributeChange('href', e.target.value)}
-                  className="w-full p-2 text-xs rounded bg-editor-panelHover text-editor-text border-editor-border"
+                  className="w-full p-2 text-xs rounded border"
+                  style={inputStyle}
                   placeholder="https://example.com"
                 />
               </div>
@@ -127,11 +160,13 @@ function RightPanel() {
                 label="패딩 (padding)"
                 value={String(selectedElement.style?.padding || '')}
                 onChange={(value) => handleStyleChange('padding', value)}
+                theme={canvasTheme}
               />
               <SpacingInput
                 label="마진 (margin)"
                 value={String(selectedElement.style?.margin || '')}
                 onChange={(value) => handleStyleChange('margin', value)}
+                theme={canvasTheme}
               />
             </div>
 
