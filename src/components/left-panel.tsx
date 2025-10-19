@@ -196,16 +196,16 @@ function LeftPanel() {
             paddingLeft: `${8 + depth * 16}px`,
             opacity: isDragging ? 0.5 : 1,
           }}
-          className={`flex items-center justify-between p-2 mb-0.5 text-xs rounded cursor-grab text-text-primary dark:text-text-primary-dark border-2 ${
+          className={`flex items-center justify-between p-2 mb-0.5 text-xs rounded cursor-grab text-text-primary border ${
             isDragOver
               ? 'border-dashed border-blue-500'
-              : 'border-solid border-transparent'
+              : 'border-solid border-panel-border'
           } ${
             isDragging
-              ? 'bg-gray-400 dark:bg-gray-600'
+              ? 'bg-gray-400 opacity-50'
               : selectedElementId === element.id
-                ? 'bg-item-selected dark:bg-item-selected-dark'
-                : 'bg-item-bg dark:bg-item-bg-dark'
+                ? 'bg-item-selected'
+                : 'bg-item-bg'
           }`}
         >
           <span>
@@ -217,7 +217,7 @@ function LeftPanel() {
               e.stopPropagation()
               deleteElement(element.id)
             }}
-            className="px-2 py-0.5 text-xs text-white border-none rounded cursor-pointer bg-editor-danger"
+            className="px-2 py-0.5 text-xs text-white border-none rounded cursor-pointer bg-red-600 hover:bg-red-700"
           >
             삭제
           </button>
@@ -231,15 +231,15 @@ function LeftPanel() {
   }
 
   return (
-    <div className="flex flex-col overflow-hidden border-r bg-panel-bg dark:bg-panel-bg-dark border-panel-border dark:border-panel-border-dark">
-      <div className="p-3 px-4 font-semibold border-b text-sm bg-panel-header dark:bg-panel-header-dark text-text-primary dark:text-text-primary-dark border-panel-border dark:border-panel-border-dark">
+    <div className="flex flex-col overflow-hidden border-r bg-panel-bg border-panel-border">
+      <div className="p-3 px-4 font-semibold border-b text-sm bg-panel-header text-text-primary border-panel-border">
         레이어
       </div>
       <div className="flex-1 p-4 overflow-auto">
         {/* 샘플 템플릿 버튼 */}
         <button
           onClick={handleLoadTemplate}
-          className="w-full p-2 mb-2 font-bold text-white border-none rounded cursor-pointer bg-editor-success text-sm"
+          className="w-full p-2 mb-2 font-bold text-white border-none rounded cursor-pointer bg-green-600 hover:bg-green-700 text-sm"
         >
           📄 샘플 템플릿 불러오기
         </button>
@@ -248,13 +248,13 @@ function LeftPanel() {
         <div className="relative mb-4">
           <button
             onClick={() => setShowAddMenu(!showAddMenu)}
-            className="w-full p-2 text-sm text-white border-none rounded cursor-pointer bg-editor-accent"
+            className="w-full p-2 text-sm text-white border-none rounded cursor-pointer bg-blue-600 hover:bg-blue-700"
           >
             + 요소 추가
           </button>
 
           {showAddMenu && (
-            <div className="absolute top-full left-0 right-0 mt-1 max-h-[300px] overflow-y-auto z-10 rounded border bg-editor-panelHover border-editor-border">
+            <div className="absolute top-full left-0 right-0 mt-1 max-h-[300px] overflow-y-auto z-10 rounded border bg-panel-bg border-panel-border">
               {[
                 { type: 'section' as const, label: '섹션 (section)' },
                 { type: 'header' as const, label: '헤더 (header)' },
@@ -270,7 +270,7 @@ function LeftPanel() {
                 <button
                   key={type}
                   onClick={() => handleAddElement(type)}
-                  className="w-full px-3 py-2 text-xs text-left text-white border-none cursor-pointer bg-transparent hover:bg-editor-border"
+                  className="w-full px-3 py-2 text-xs text-left border-none cursor-pointer bg-transparent text-text-primary hover:bg-item-hover"
                 >
                   {label}
                 </button>
@@ -281,7 +281,7 @@ function LeftPanel() {
 
         {/* 요소 목록 */}
         {elements.length === 0 ? (
-          <p className="text-sm text-editor-textMuted">
+          <p className="text-sm text-text-muted">
             요소가 없습니다. 샘플 템플릿을 불러오거나 요소를 추가하세요.
           </p>
         ) : (
@@ -292,13 +292,13 @@ function LeftPanel() {
             }}
             onDragLeave={() => setDragOverElementId(null)}
             onDrop={handleDropToRoot}
-            className={`p-1 min-h-[100px] rounded ${dragOverElementId === 'root' ? 'border-2 border-dashed border-editor-accent bg-editor-accent/10' : 'border-2 border-dashed border-transparent'}`}
+            className={`p-1 min-h-[100px] rounded ${dragOverElementId === 'root' ? 'border-2 border-dashed border-blue-500 bg-blue-500/10' : 'border-2 border-dashed border-transparent'}`}
           >
             {elements
               .filter((el) => el.parentId === null)
               .map((element) => renderElement(element))}
             {dragOverElementId === 'root' && (
-              <div className="p-2 text-xs text-center text-editor-accent">
+              <div className="p-2 text-xs text-center text-blue-500">
                 여기에 놓으면 최상위 요소가 됩니다
               </div>
             )}
