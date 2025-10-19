@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useEditorStore } from '../stores/editor-store'
 import type { HTMLElement, HTMLElementType } from '../types/editor'
 import { SAMPLE_TEMPLATE } from '../utils/sample-templates'
-import { Download, Layers, FileCode } from 'lucide-react'
+import { Download, Layers, FileCode, ChevronDown, ChevronRight } from 'lucide-react'
 
 function LeftPanel() {
   const elements = useEditorStore((state) => state.elements)
@@ -380,16 +380,15 @@ ${bodyContent}
           }`}
         >
           <div className="flex items-center gap-1">
-            {hasChildren && (
+            {hasChildren ? (
               <button
                 onClick={(e) => toggleCollapse(element.id, e)}
-                className="p-0.5 hover:bg-item-hover rounded transition-transform"
-                style={{
-                  transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-                }}
+                className="p-1 hover:bg-item-hover rounded flex items-center justify-center min-w-[20px] min-h-[20px]"
               >
-                ▾
+                {isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
               </button>
+            ) : (
+              <div className="min-w-[20px]" />
             )}
             <span>{element.tagName}</span>
           </div>
