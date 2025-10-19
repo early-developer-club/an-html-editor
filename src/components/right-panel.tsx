@@ -33,20 +33,20 @@ function RightPanel() {
   }
 
   return (
-    <div className="flex flex-col overflow-hidden border-l bg-panel dark:bg-panel-dark border-panelBorder dark:border-panelBorder-dark">
-      <div className="flex items-center justify-between p-3 px-4 font-semibold border-b text-sm bg-panelHeader dark:bg-panelHeader-dark text-textPrimary dark:text-textPrimary-dark border-panelBorder dark:border-panelBorder-dark">
+    <div className="flex flex-col overflow-hidden border-l bg-panel-bg dark:bg-panel-bg-dark border-panel-border dark:border-panel-border-dark">
+      <div className="flex items-center justify-between p-3 px-4 font-semibold border-b text-sm bg-panel-header dark:bg-panel-header-dark text-text-primary dark:text-text-primary-dark border-panel-border dark:border-panel-border-dark">
         <span>속성</span>
         <button
           onClick={() =>
             setCanvasTheme(canvasTheme === 'dark' ? 'light' : 'dark')
           }
-          className="p-1.5 border rounded hover:bg-opacity-80 bg-itemHover dark:bg-itemHover-dark border-panelBorder dark:border-panelBorder-dark text-textPrimary dark:text-textPrimary-dark"
+          className="p-1.5 border rounded hover:bg-opacity-80 bg-item-hover dark:bg-item-hover-dark border-panel-border dark:border-panel-border-dark text-text-primary dark:text-text-primary-dark"
           title={`${canvasTheme === 'dark' ? '밝은' : '어두운'} 테마로 전환`}
         >
           {canvasTheme === 'dark' ? <SunIcon /> : <MoonIcon />}
         </button>
       </div>
-      <div className="flex-1 p-4 overflow-auto text-textPrimary dark:text-textPrimary-dark">
+      <div className="flex-1 p-4 overflow-auto text-text-primary dark:text-text-primary-dark">
         {selectedElement ? (
           <div>
             {/* 기본 정보 */}
@@ -68,7 +68,7 @@ function RightPanel() {
                 <textarea
                   value={selectedElement.textContent || ''}
                   onChange={(e) => handleTextContentChange(e.target.value)}
-                  className="w-full p-2 text-xs rounded resize-y min-h-20 border font-inherit bg-input dark:bg-input-dark text-textPrimary dark:text-textPrimary-dark border-inputBorder dark:border-inputBorder-dark"
+                  className="w-full p-2 text-xs rounded resize-y min-h-20 border font-inherit bg-input-bg dark:bg-input-bg-dark text-text-primary dark:text-text-primary-dark border-input-border dark:border-input-border-dark"
                   placeholder="텍스트를 입력하세요"
                 />
               </div>
@@ -87,7 +87,7 @@ function RightPanel() {
                   type="text"
                   value={selectedElement.src || ''}
                   onChange={(e) => handleAttributeChange('src', e.target.value)}
-                  className="w-full p-2 text-xs rounded border bg-input dark:bg-input-dark text-textPrimary dark:text-textPrimary-dark border-inputBorder dark:border-inputBorder-dark"
+                  className="w-full p-2 text-xs rounded border bg-input-bg dark:bg-input-bg-dark text-text-primary dark:text-text-primary-dark border-input-border dark:border-input-border-dark"
                   placeholder="https://example.com/image.jpg"
                 />
                 <label className="block mt-3 mb-1 text-xs text-editor-textMuted">
@@ -97,7 +97,7 @@ function RightPanel() {
                   type="text"
                   value={selectedElement.alt || ''}
                   onChange={(e) => handleAttributeChange('alt', e.target.value)}
-                  className="w-full p-2 text-xs rounded border bg-input dark:bg-input-dark text-textPrimary dark:text-textPrimary-dark border-inputBorder dark:border-inputBorder-dark"
+                  className="w-full p-2 text-xs rounded border bg-input-bg dark:bg-input-bg-dark text-text-primary dark:text-text-primary-dark border-input-border dark:border-input-border-dark"
                   placeholder="이미지 설명"
                 />
               </div>
@@ -116,7 +116,7 @@ function RightPanel() {
                   type="text"
                   value={selectedElement.href || ''}
                   onChange={(e) => handleAttributeChange('href', e.target.value)}
-                  className="w-full p-2 text-xs rounded border bg-input dark:bg-input-dark text-textPrimary dark:text-textPrimary-dark border-inputBorder dark:border-inputBorder-dark"
+                  className="w-full p-2 text-xs rounded border bg-input-bg dark:bg-input-bg-dark text-text-primary dark:text-text-primary-dark border-input-border dark:border-input-border-dark"
                   placeholder="https://example.com"
                 />
               </div>

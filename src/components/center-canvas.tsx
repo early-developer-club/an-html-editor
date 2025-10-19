@@ -103,7 +103,7 @@ function CenterCanvas() {
   }
 
   return (
-    <div className="relative flex flex-col overflow-hidden bg-canvasBg dark:bg-canvasBg-dark">
+    <div className="relative flex flex-col overflow-hidden bg-canvas-bg dark:bg-canvas-bg-dark">
       <div className="flex items-start justify-center flex-1 px-5 py-10 overflow-x-hidden overflow-y-auto">
         {elements.length === 0 ? (
           <div className="p-16 px-5 m-auto text-center text-gray-500">

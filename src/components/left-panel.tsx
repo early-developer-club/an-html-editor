@@ -196,7 +196,7 @@ function LeftPanel() {
             paddingLeft: `${8 + depth * 16}px`,
             opacity: isDragging ? 0.5 : 1,
           }}
-          className={`flex items-center justify-between p-2 mb-0.5 text-xs rounded cursor-grab text-textPrimary dark:text-textPrimary-dark border-2 ${
+          className={`flex items-center justify-between p-2 mb-0.5 text-xs rounded cursor-grab text-text-primary dark:text-text-primary-dark border-2 ${
             isDragOver
               ? 'border-dashed border-blue-500'
               : 'border-solid border-transparent'
@@ -204,8 +204,8 @@ function LeftPanel() {
             isDragging
               ? 'bg-gray-400 dark:bg-gray-600'
               : selectedElementId === element.id
-                ? 'bg-itemSelected dark:bg-itemSelected-dark'
-                : 'bg-itemBg dark:bg-itemBg-dark'
+                ? 'bg-item-selected dark:bg-item-selected-dark'
+                : 'bg-item-bg dark:bg-item-bg-dark'
           }`}
         >
           <span>
@@ -231,8 +231,8 @@ function LeftPanel() {
   }
 
   return (
-    <div className="flex flex-col overflow-hidden border-r bg-panel dark:bg-panel-dark border-panelBorder dark:border-panelBorder-dark">
-      <div className="p-3 px-4 font-semibold border-b text-sm bg-panelHeader dark:bg-panelHeader-dark text-textPrimary dark:text-textPrimary-dark border-panelBorder dark:border-panelBorder-dark">
+    <div className="flex flex-col overflow-hidden border-r bg-panel-bg dark:bg-panel-bg-dark border-panel-border dark:border-panel-border-dark">
+      <div className="p-3 px-4 font-semibold border-b text-sm bg-panel-header dark:bg-panel-header-dark text-text-primary dark:text-text-primary-dark border-panel-border dark:border-panel-border-dark">
         레이어
       </div>
       <div className="flex-1 p-4 overflow-auto">

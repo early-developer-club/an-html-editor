@@ -69,7 +69,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   selectedElementId: null,
   assets: [],
   canvas: INITIAL_CANVAS_STATE,
-  canvasTheme: 'dark',
+  canvasTheme: 'light',
   history: INITIAL_HISTORY,
 
   // Actions
