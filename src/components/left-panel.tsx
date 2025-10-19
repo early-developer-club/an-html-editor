@@ -1,8 +1,15 @@
+import {
+  ChevronDown,
+  ChevronRight,
+  Download,
+  FileCode,
+  Layers,
+  Minus,
+} from 'lucide-react'
 import { useState } from 'react'
 import { useEditorStore } from '../stores/editor-store'
 import type { HTMLElement, HTMLElementType } from '../types/editor'
 import { SAMPLE_TEMPLATE } from '../utils/sample-templates'
-import { Download, Layers, FileCode, ChevronDown, ChevronRight } from 'lucide-react'
 
 function LeftPanel() {
   const elements = useEditorStore((state) => state.elements)
@@ -16,9 +23,15 @@ function LeftPanel() {
   const [activeTab, setActiveTab] = useState<'template' | 'layers'>('layers')
   const [showAddMenu, setShowAddMenu] = useState(false)
   const [draggedElementId, setDraggedElementId] = useState<string | null>(null)
-  const [dragOverElementId, setDragOverElementId] = useState<string | null>(null)
-  const [dropPosition, setDropPosition] = useState<'before' | 'after' | 'inside' | null>(null)
-  const [collapsedElements, setCollapsedElements] = useState<Set<string>>(new Set())
+  const [dragOverElementId, setDragOverElementId] = useState<string | null>(
+    null
+  )
+  const [dropPosition, setDropPosition] = useState<
+    'before' | 'after' | 'inside' | null
+  >(null)
+  const [collapsedElements, setCollapsedElements] = useState<Set<string>>(
+    new Set()
+  )
 
   const handleLoadTemplate = () => {
     if (
@@ -32,7 +45,10 @@ function LeftPanel() {
 
   const generateHTML = () => {
     // 요소를 HTML 문자열로 변환하는 재귀 함수
-    const elementToHTML = (element: HTMLElement, indent: number = 0): string => {
+    const elementToHTML = (
+      element: HTMLElement,
+      indent: number = 0
+    ): string => {
       const indentation = '  '.repeat(indent)
       const children = elements.filter((el) => el.parentId === element.id)
 
@@ -55,7 +71,9 @@ function LeftPanel() {
       // a 태그 처리
       if (element.tagName === 'a') {
         const href = element.href || '#'
-        const content = element.textContent || children.map((child) => elementToHTML(child, indent + 1)).join('\n')
+        const content =
+          element.textContent ||
+          children.map((child) => elementToHTML(child, indent + 1)).join('\n')
         return `${indentation}<a href="${href}"${styleString ? ` style="${styleString}"` : ''}>${children.length > 0 ? '\n' + content + '\n' + indentation : element.textContent || ''}</a>`
       }
 
@@ -152,7 +170,11 @@ ${bodyContent}
       footer: {
         tagName: 'footer',
         content: '',
-        style: { padding: '30px 20px', backgroundColor: '#333333', color: '#ffffff' },
+        style: {
+          padding: '30px 20px',
+          backgroundColor: '#333333',
+          color: '#ffffff',
+        },
       },
       div: { tagName: 'div', content: '', style: { padding: '10px' } },
       h1: {
@@ -292,7 +314,9 @@ ${bodyContent}
     } else {
       // 형제로 삽입 (before 또는 after)
       const newElements = [...elements]
-      const draggedIndex = newElements.findIndex((el) => el.id === draggedElementId)
+      const draggedIndex = newElements.findIndex(
+        (el) => el.id === draggedElementId
+      )
 
       // 드래그된 요소 제거
       const [removed] = newElements.splice(draggedIndex, 1)
@@ -301,8 +325,11 @@ ${bodyContent}
       removed.parentId = targetElement.parentId
 
       // 새로운 위치에 삽입
-      const newTargetIndex = newElements.findIndex((el) => el.id === targetElementId)
-      const insertIndex = dropPosition === 'before' ? newTargetIndex : newTargetIndex + 1
+      const newTargetIndex = newElements.findIndex(
+        (el) => el.id === targetElementId
+      )
+      const insertIndex =
+        dropPosition === 'before' ? newTargetIndex : newTargetIndex + 1
       newElements.splice(insertIndex, 0, removed)
 
       reorderElements(newElements)
@@ -349,9 +376,11 @@ ${bodyContent}
     // 드롭 위치에 따른 테두리 스타일
     let borderClass = 'border-solid border-panel-border'
     if (isDragOver && dropPosition === 'before') {
-      borderClass = 'border-t-4 border-t-blue-500 border-x border-b border-panel-border'
+      borderClass =
+        'border-t-4 border-t-blue-500 border-x border-b border-panel-border'
     } else if (isDragOver && dropPosition === 'after') {
-      borderClass = 'border-b-4 border-b-blue-500 border-x border-t border-panel-border'
+      borderClass =
+        'border-b-4 border-b-blue-500 border-x border-t border-panel-border'
     } else if (isDragOver && dropPosition === 'inside') {
       borderClass = 'border-2 border-dashed border-blue-500'
     } else if (!isDragOver) {
@@ -385,10 +414,16 @@ ${bodyContent}
                 onClick={(e) => toggleCollapse(element.id, e)}
                 className="p-1 hover:bg-item-hover rounded flex items-center justify-center min-w-[20px] min-h-[20px]"
               >
-                {isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+                {isCollapsed ? (
+                  <ChevronRight size={16} />
+                ) : (
+                  <ChevronDown size={16} />
+                )}
               </button>
             ) : (
-              <div className="min-w-[20px]" />
+              <div className="p-1 flex items-center justify-center min-w-[20px] min-h-[20px] opacity-50 rotate-90">
+                <Minus size={16} />
+              </div>
             )}
             <span>{element.tagName}</span>
           </div>
@@ -403,9 +438,10 @@ ${bodyContent}
           </button>
         </div>
         {/* 자식 요소 렌더링 - 접혀있지 않을 때만 */}
-        {!isCollapsed && elements
-          .filter((el) => el.parentId === element.id)
-          .map((child) => renderElement(child, depth + 1))}
+        {!isCollapsed &&
+          elements
+            .filter((el) => el.parentId === element.id)
+            .map((child) => renderElement(child, depth + 1))}
       </div>
     )
   }
@@ -465,72 +501,73 @@ ${bodyContent}
         {activeTab === 'layers' && (
           <>
             {/* 요소 추가 버튼 */}
-        <div className="relative mb-4">
-          <button
-            onClick={() => setShowAddMenu(!showAddMenu)}
-            className="w-full p-2 text-sm text-white border-none rounded cursor-pointer bg-blue-600 hover:bg-blue-700"
-          >
-            {selectedElementId
-              ? `+ 선택된 요소의 자식으로 추가`
-              : '+ 요소 추가'}
-          </button>
-          {selectedElementId && (
-            <p className="mt-1 text-xs text-text-muted">
-              {elements.find(el => el.id === selectedElementId)?.tagName} 요소의 자식으로 추가됩니다
-            </p>
-          )}
+            <div className="relative mb-4">
+              <button
+                onClick={() => setShowAddMenu(!showAddMenu)}
+                className="w-full p-2 text-sm text-white border-none rounded cursor-pointer bg-blue-600 hover:bg-blue-700"
+              >
+                {selectedElementId
+                  ? `+ 선택된 요소의 자식으로 추가`
+                  : '+ 요소 추가'}
+              </button>
+              {selectedElementId && (
+                <p className="mt-1 text-xs text-text-muted">
+                  {elements.find((el) => el.id === selectedElementId)?.tagName}{' '}
+                  요소의 자식으로 추가됩니다
+                </p>
+              )}
 
-          {showAddMenu && (
-            <div className="absolute top-full left-0 right-0 mt-1 max-h-[300px] overflow-y-auto z-10 rounded border bg-panel-bg border-panel-border">
-              {[
-                { type: 'section' as const, label: '섹션 (section)' },
-                { type: 'header' as const, label: '헤더 (header)' },
-                { type: 'footer' as const, label: '푸터 (footer)' },
-                { type: 'div' as const, label: '박스 (div)' },
-                { type: 'h1' as const, label: '제목 1 (h1)' },
-                { type: 'h2' as const, label: '제목 2 (h2)' },
-                { type: 'h3' as const, label: '제목 3 (h3)' },
-                { type: 'p' as const, label: '텍스트 (p)' },
-                { type: 'img' as const, label: '이미지 (img)' },
-                { type: 'button' as const, label: '버튼 (button)' },
-              ].map(({ type, label }) => (
-                <button
-                  key={type}
-                  onClick={() => handleAddElement(type)}
-                  className="w-full px-3 py-2 text-xs text-left border-none cursor-pointer bg-transparent text-text-primary hover:bg-item-hover"
-                >
-                  {label}
-                </button>
-              ))}
+              {showAddMenu && (
+                <div className="absolute top-full left-0 right-0 mt-1 max-h-[300px] overflow-y-auto z-10 rounded border bg-panel-bg border-panel-border">
+                  {[
+                    { type: 'section' as const, label: '섹션 (section)' },
+                    { type: 'header' as const, label: '헤더 (header)' },
+                    { type: 'footer' as const, label: '푸터 (footer)' },
+                    { type: 'div' as const, label: '박스 (div)' },
+                    { type: 'h1' as const, label: '제목 1 (h1)' },
+                    { type: 'h2' as const, label: '제목 2 (h2)' },
+                    { type: 'h3' as const, label: '제목 3 (h3)' },
+                    { type: 'p' as const, label: '텍스트 (p)' },
+                    { type: 'img' as const, label: '이미지 (img)' },
+                    { type: 'button' as const, label: '버튼 (button)' },
+                  ].map(({ type, label }) => (
+                    <button
+                      key={type}
+                      onClick={() => handleAddElement(type)}
+                      className="w-full px-3 py-2 text-xs text-left border-none cursor-pointer bg-transparent text-text-primary hover:bg-item-hover"
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* 요소 목록 */}
-        {elements.length === 0 ? (
-          <p className="text-sm text-text-muted">
-            요소가 없습니다. 샘플 템플릿을 불러오거나 요소를 추가하세요.
-          </p>
-        ) : (
-          <div
-            onDragOver={(e) => {
-              e.preventDefault()
-              setDragOverElementId('root')
-            }}
-            onDragLeave={() => setDragOverElementId(null)}
-            onDrop={handleDropToRoot}
-            className={`p-1 min-h-[100px] rounded ${dragOverElementId === 'root' ? 'border-2 border-dashed border-blue-500 bg-blue-500/10' : 'border-2 border-dashed border-transparent'}`}
-          >
-            {elements
-              .filter((el) => el.parentId === null)
-              .map((element) => renderElement(element))}
-            {dragOverElementId === 'root' && (
-              <div className="p-2 text-xs text-center text-blue-500">
-                여기에 놓으면 최상위 요소가 됩니다
+            {/* 요소 목록 */}
+            {elements.length === 0 ? (
+              <p className="text-sm text-text-muted">
+                요소가 없습니다. 샘플 템플릿을 불러오거나 요소를 추가하세요.
+              </p>
+            ) : (
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  setDragOverElementId('root')
+                }}
+                onDragLeave={() => setDragOverElementId(null)}
+                onDrop={handleDropToRoot}
+                className={`p-1 min-h-[100px] rounded ${dragOverElementId === 'root' ? 'border-2 border-dashed border-blue-500 bg-blue-500/10' : 'border-2 border-dashed border-transparent'}`}
+              >
+                {elements
+                  .filter((el) => el.parentId === null)
+                  .map((element) => renderElement(element))}
+                {dragOverElementId === 'root' && (
+                  <div className="p-2 text-xs text-center text-blue-500">
+                    여기에 놓으면 최상위 요소가 됩니다
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
           </>
         )}
       </div>
