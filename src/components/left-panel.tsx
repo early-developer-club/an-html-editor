@@ -197,6 +197,9 @@ ${bodyContent}
 
     const config = elementConfigs[type]
 
+    // 선택된 요소를 부모로 설정 (선택된 요소가 있으면)
+    const parentId = selectedElementId || undefined
+
     // img 태그는 특별 처리 (src, alt 속성 추가)
     if (type === 'img') {
       const newElement = createElement(
@@ -209,7 +212,7 @@ ${bodyContent}
           alt: '이미지 설명을 입력하세요',
         }
       )
-      addElement(newElement)
+      addElement(newElement, parentId)
     } else {
       const newElement = createElement(
         type,
@@ -217,7 +220,7 @@ ${bodyContent}
         config.content,
         config.style
       )
-      addElement(newElement)
+      addElement(newElement, parentId)
     }
 
     setShowAddMenu(false)
@@ -442,8 +445,15 @@ ${bodyContent}
             onClick={() => setShowAddMenu(!showAddMenu)}
             className="w-full p-2 text-sm text-white border-none rounded cursor-pointer bg-blue-600 hover:bg-blue-700"
           >
-            + 요소 추가
+            {selectedElementId
+              ? `+ 선택된 요소의 자식으로 추가`
+              : '+ 요소 추가'}
           </button>
+          {selectedElementId && (
+            <p className="mt-1 text-xs text-text-muted">
+              {elements.find(el => el.id === selectedElementId)?.tagName} 요소의 자식으로 추가됩니다
+            </p>
+          )}
 
           {showAddMenu && (
             <div className="absolute top-full left-0 right-0 mt-1 max-h-[300px] overflow-y-auto z-10 rounded border bg-panel-bg border-panel-border">
