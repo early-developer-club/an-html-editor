@@ -6,10 +6,9 @@ interface SpacingInputProps {
   label: string;
   value: string | undefined;
   onChange: (value: string) => void;
-  theme?: 'dark' | 'light';
 }
 
-const SpacingInput = ({ label, value, onChange, theme = 'dark' }: SpacingInputProps) => {
+const SpacingInput = ({ label, value, onChange }: SpacingInputProps) => {
   const [mode, setMode] = useState('all'); // all, individual
   const [values, setValues] = useState({
     top: '0',
@@ -85,24 +84,13 @@ const SpacingInput = ({ label, value, onChange, theme = 'dark' }: SpacingInputPr
     }
   };
 
-  const inputStyle: React.CSSProperties = {
-    backgroundColor: theme === 'dark' ? '#3c3c3c' : '#ffffff',
-    color: theme === 'dark' ? '#cccccc' : '#333333',
-    borderColor: theme === 'dark' ? '#555555' : '#d0d0d0',
-  };
-
-  const buttonStyle: React.CSSProperties = {
-    backgroundColor: theme === 'dark' ? '#3c3c3c' : '#e8e8e8',
-    color: theme === 'dark' ? '#cccccc' : '#333333',
-  };
-
   return (
     <div>
       <label className="block mt-3 mb-1 text-xs text-editor-textMuted">
         {label}
       </label>
       <div className="flex items-center space-x-2">
-        <button onClick={handleModeChange} className="p-1 text-xs rounded" style={buttonStyle}>
+        <button onClick={handleModeChange} className="p-1 text-xs rounded bg-buttonBg dark:bg-buttonBg-dark text-textPrimary dark:text-textPrimary-dark">
           {mode === 'all' ? <LinkedIcon /> : <UnlinkedIcon />}
         </button>
         {mode === 'all' ? (
@@ -110,8 +98,7 @@ const SpacingInput = ({ label, value, onChange, theme = 'dark' }: SpacingInputPr
             type="text"
             value={values.top}
             onChange={(e) => handleChange('top', e.target.value)}
-            className="w-full p-2 text-xs rounded border"
-            style={inputStyle}
+            className="w-full p-2 text-xs rounded border bg-input dark:bg-input-dark text-textPrimary dark:text-textPrimary-dark border-inputBorder dark:border-inputBorder-dark"
           />
         ) : (
           <div className="grid grid-cols-4 gap-2">
@@ -119,32 +106,28 @@ const SpacingInput = ({ label, value, onChange, theme = 'dark' }: SpacingInputPr
               type="text"
               value={values.top}
               onChange={(e) => handleChange('top', e.target.value)}
-              className="w-full p-2 text-xs rounded border"
-              style={inputStyle}
+              className="w-full p-2 text-xs rounded border bg-input dark:bg-input-dark text-textPrimary dark:text-textPrimary-dark border-inputBorder dark:border-inputBorder-dark"
               placeholder="Top"
             />
             <input
               type="text"
               value={values.right}
               onChange={(e) => handleChange('right', e.target.value)}
-              className="w-full p-2 text-xs rounded border"
-              style={inputStyle}
+              className="w-full p-2 text-xs rounded border bg-input dark:bg-input-dark text-textPrimary dark:text-textPrimary-dark border-inputBorder dark:border-inputBorder-dark"
               placeholder="Right"
             />
             <input
               type="text"
               value={values.bottom}
               onChange={(e) => handleChange('bottom', e.target.value)}
-              className="w-full p-2 text-xs rounded border"
-              style={inputStyle}
+              className="w-full p-2 text-xs rounded border bg-input dark:bg-input-dark text-textPrimary dark:text-textPrimary-dark border-inputBorder dark:border-inputBorder-dark"
               placeholder="Bottom"
             />
             <input
               type="text"
               value={values.left}
               onChange={(e) => handleChange('left', e.target.value)}
-              className="w-full p-2 text-xs rounded border"
-              style={inputStyle}
+              className="w-full p-2 text-xs rounded border bg-input dark:bg-input-dark text-textPrimary dark:text-textPrimary-dark border-inputBorder dark:border-inputBorder-dark"
               placeholder="Left"
             />
           </div>
