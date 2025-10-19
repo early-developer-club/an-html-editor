@@ -6,9 +6,10 @@ interface SpacingInputProps {
   label: string;
   value: string | undefined;
   onChange: (value: string) => void;
+  theme?: 'dark' | 'light';
 }
 
-const SpacingInput = ({ label, value, onChange }: SpacingInputProps) => {
+const SpacingInput = ({ label, value, onChange, theme = 'dark' }: SpacingInputProps) => {
   const [mode, setMode] = useState('all'); // all, individual
   const [values, setValues] = useState({
     top: '0',
@@ -84,13 +85,24 @@ const SpacingInput = ({ label, value, onChange }: SpacingInputProps) => {
     }
   };
 
+  const inputStyle: React.CSSProperties = {
+    backgroundColor: theme === 'dark' ? '#3c3c3c' : '#ffffff',
+    color: theme === 'dark' ? '#cccccc' : '#333333',
+    borderColor: theme === 'dark' ? '#555555' : '#d0d0d0',
+  };
+
+  const buttonStyle: React.CSSProperties = {
+    backgroundColor: theme === 'dark' ? '#3c3c3c' : '#e8e8e8',
+    color: theme === 'dark' ? '#cccccc' : '#333333',
+  };
+
   return (
     <div>
       <label className="block mt-3 mb-1 text-xs text-editor-textMuted">
         {label}
       </label>
       <div className="flex items-center space-x-2">
-        <button onClick={handleModeChange} className="p-1 text-xs bg-editor-panelHover rounded">
+        <button onClick={handleModeChange} className="p-1 text-xs rounded" style={buttonStyle}>
           {mode === 'all' ? <LinkedIcon /> : <UnlinkedIcon />}
         </button>
         {mode === 'all' ? (
@@ -98,7 +110,8 @@ const SpacingInput = ({ label, value, onChange }: SpacingInputProps) => {
             type="text"
             value={values.top}
             onChange={(e) => handleChange('top', e.target.value)}
-            className="w-full p-2 text-xs rounded bg-editor-panelHover text-editor-text border-editor-border"
+            className="w-full p-2 text-xs rounded border"
+            style={inputStyle}
           />
         ) : (
           <div className="grid grid-cols-4 gap-2">
@@ -106,28 +119,32 @@ const SpacingInput = ({ label, value, onChange }: SpacingInputProps) => {
               type="text"
               value={values.top}
               onChange={(e) => handleChange('top', e.target.value)}
-              className="w-full p-2 text-xs rounded bg-editor-panelHover text-editor-text border-editor-border"
+              className="w-full p-2 text-xs rounded border"
+              style={inputStyle}
               placeholder="Top"
             />
             <input
               type="text"
               value={values.right}
               onChange={(e) => handleChange('right', e.target.value)}
-              className="w-full p-2 text-xs rounded bg-editor-panelHover text-editor-text border-editor-border"
+              className="w-full p-2 text-xs rounded border"
+              style={inputStyle}
               placeholder="Right"
             />
             <input
               type="text"
               value={values.bottom}
               onChange={(e) => handleChange('bottom', e.target.value)}
-              className="w-full p-2 text-xs rounded bg-editor-panelHover text-editor-text border-editor-border"
+              className="w-full p-2 text-xs rounded border"
+              style={inputStyle}
               placeholder="Bottom"
             />
             <input
               type="text"
               value={values.left}
               onChange={(e) => handleChange('left', e.target.value)}
-              className="w-full p-2 text-xs rounded bg-editor-panelHover text-editor-text border-editor-border"
+              className="w-full p-2 text-xs rounded border"
+              style={inputStyle}
               placeholder="Left"
             />
           </div>
