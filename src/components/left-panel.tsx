@@ -11,7 +11,6 @@ function LeftPanel() {
   const deleteElement = useEditorStore((state) => state.deleteElement)
   const loadTemplate = useEditorStore((state) => state.loadTemplate)
   const moveElement = useEditorStore((state) => state.moveElement)
-  const canvasTheme = useEditorStore((state) => state.canvasTheme)
   const [showAddMenu, setShowAddMenu] = useState(false)
   const [draggedElementId, setDraggedElementId] = useState<string | null>(null)
   const [dragOverElementId, setDragOverElementId] = useState<string | null>(null)
@@ -184,14 +183,6 @@ function LeftPanel() {
     const isDragging = draggedElementId === element.id
     const isDragOver = dragOverElementId === element.id
 
-    const getBackgroundColor = () => {
-      if (isDragging) return canvasTheme === 'dark' ? '#444444' : '#bbbbbb'
-      if (isDragOver) return '#0066cc33'
-      if (selectedElementId === element.id)
-        return canvasTheme === 'dark' ? '#094771' : '#0078d4'
-      return canvasTheme === 'dark' ? '#2d2d30' : '#e8e8e8'
-    }
-
     return (
       <div key={element.id}>
         <div
@@ -203,12 +194,19 @@ function LeftPanel() {
           onClick={() => selectElement(element.id)}
           style={{
             paddingLeft: `${8 + depth * 16}px`,
-            backgroundColor: getBackgroundColor(),
-            color: canvasTheme === 'dark' ? '#cccccc' : '#333333',
             opacity: isDragging ? 0.5 : 1,
-            border: isDragOver ? '2px dashed #0066cc' : '2px solid transparent',
           }}
-          className="flex items-center justify-between p-2 mb-0.5 text-xs rounded cursor-grab"
+          className={`flex items-center justify-between p-2 mb-0.5 text-xs rounded cursor-grab text-textPrimary dark:text-textPrimary-dark border-2 ${
+            isDragOver
+              ? 'border-dashed border-blue-500'
+              : 'border-solid border-transparent'
+          } ${
+            isDragging
+              ? 'bg-gray-400 dark:bg-gray-600'
+              : selectedElementId === element.id
+                ? 'bg-itemSelected dark:bg-itemSelected-dark'
+                : 'bg-itemBg dark:bg-itemBg-dark'
+          }`}
         >
           <span>
             {hasChildren && '▾ '}
@@ -233,19 +231,8 @@ function LeftPanel() {
   }
 
   return (
-    <div
-      className="flex flex-col overflow-hidden border-r border-editor-border"
-      style={{
-        backgroundColor: canvasTheme === 'dark' ? '#252526' : '#f3f3f3',
-      }}
-    >
-      <div
-        className="p-3 px-4 font-semibold border-b text-sm border-editor-border"
-        style={{
-          backgroundColor: canvasTheme === 'dark' ? '#2d2d30' : '#e8e8e8',
-          color: canvasTheme === 'dark' ? '#cccccc' : '#333333',
-        }}
-      >
+    <div className="flex flex-col overflow-hidden border-r bg-panel dark:bg-panel-dark border-panelBorder dark:border-panelBorder-dark">
+      <div className="p-3 px-4 font-semibold border-b text-sm bg-panelHeader dark:bg-panelHeader-dark text-textPrimary dark:text-textPrimary-dark border-panelBorder dark:border-panelBorder-dark">
         레이어
       </div>
       <div className="flex-1 p-4 overflow-auto">
