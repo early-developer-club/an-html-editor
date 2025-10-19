@@ -18,6 +18,7 @@ function LeftPanel() {
   const [draggedElementId, setDraggedElementId] = useState<string | null>(null)
   const [dragOverElementId, setDragOverElementId] = useState<string | null>(null)
   const [dropPosition, setDropPosition] = useState<'before' | 'after' | 'inside' | null>(null)
+  const [collapsedElements, setCollapsedElements] = useState<Set<string>>(new Set())
 
   const handleLoadTemplate = () => {
     if (
@@ -323,12 +324,27 @@ ${bodyContent}
     setDropPosition(null)
   }
 
+  // 요소 접기/펼치기 토글
+  const toggleCollapse = (elementId: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setCollapsedElements((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(elementId)) {
+        newSet.delete(elementId)
+      } else {
+        newSet.add(elementId)
+      }
+      return newSet
+    })
+  }
+
   // 계층 구조 렌더링 함수
   const renderElement = (element: HTMLElement, depth: number = 0) => {
     const hasChildren =
       elements.filter((el) => el.parentId === element.id).length > 0
     const isDragging = draggedElementId === element.id
     const isDragOver = dragOverElementId === element.id
+    const isCollapsed = collapsedElements.has(element.id)
 
     // 드롭 위치에 따른 테두리 스타일
     let borderClass = 'border-solid border-panel-border'
@@ -363,10 +379,20 @@ ${bodyContent}
                 : 'bg-item-bg'
           }`}
         >
-          <span>
-            {hasChildren && '▾ '}
-            {element.tagName}
-          </span>
+          <div className="flex items-center gap-1">
+            {hasChildren && (
+              <button
+                onClick={(e) => toggleCollapse(element.id, e)}
+                className="p-0.5 hover:bg-item-hover rounded transition-transform"
+                style={{
+                  transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                }}
+              >
+                ▾
+              </button>
+            )}
+            <span>{element.tagName}</span>
+          </div>
           <button
             onClick={(e) => {
               e.stopPropagation()
@@ -377,8 +403,8 @@ ${bodyContent}
             삭제
           </button>
         </div>
-        {/* 자식 요소 렌더링 */}
-        {elements
+        {/* 자식 요소 렌더링 - 접혀있지 않을 때만 */}
+        {!isCollapsed && elements
           .filter((el) => el.parentId === element.id)
           .map((child) => renderElement(child, depth + 1))}
       </div>
