@@ -5,6 +5,8 @@ function RightPanel() {
   const selectedElementId = useEditorStore((state) => state.selectedElementId)
   const elements = useEditorStore((state) => state.elements)
   const updateElement = useEditorStore((state) => state.updateElement)
+  const canvasTheme = useEditorStore((state) => state.canvasTheme)
+  const setCanvasTheme = useEditorStore((state) => state.setCanvasTheme)
 
   const selectedElement = elements.find((el) => el.id === selectedElementId)
 
@@ -30,8 +32,17 @@ function RightPanel() {
 
   return (
     <div className="flex flex-col overflow-hidden border-l bg-editor-panel border-editor-border">
-      <div className="p-3 px-4 font-semibold border-b text-sm bg-editor-panelHover text-editor-text border-editor-border">
-        속성
+      <div className="flex items-center justify-between p-3 px-4 font-semibold border-b text-sm bg-editor-panelHover text-editor-text border-editor-border">
+        <span>속성</span>
+        <button
+          onClick={() =>
+            setCanvasTheme(canvasTheme === 'dark' ? 'light' : 'dark')
+          }
+          className="px-2 py-1 text-xs border rounded bg-editor-panel border-editor-border hover:bg-editor-border"
+          title={`${canvasTheme === 'dark' ? '밝은' : '어두운'} 테마로 전환`}
+        >
+          {canvasTheme === 'dark' ? '☀️' : '🌙'}
+        </button>
       </div>
       <div className="flex-1 p-4 overflow-auto">
         {selectedElement ? (
