@@ -42,6 +42,7 @@ function CenterCanvas() {
             outline: isSelected ? '2px solid #0066cc' : 'none',
             cursor: 'pointer',
             position: 'relative',
+            zIndex: isSelected ? 1000 : 'auto',
           }}
         />
       )
@@ -64,6 +65,7 @@ function CenterCanvas() {
             outline: isSelected ? '2px solid #0066cc' : 'none',
             cursor: 'pointer',
             position: 'relative',
+            zIndex: isSelected ? 1000 : 'auto',
           }}
         >
           {element.textContent
@@ -90,6 +92,7 @@ function CenterCanvas() {
           outline: isSelected ? '2px solid #0066cc' : 'none',
           cursor: 'pointer',
           position: 'relative',
+          zIndex: isSelected ? 1000 : 'auto',
         }}
       >
         {/* 텍스트 컨텐츠가 있으면 표시, 없으면 자식 요소 렌더링 */}
