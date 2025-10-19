@@ -86,11 +86,11 @@ const SpacingInput = ({ label, value, onChange }: SpacingInputProps) => {
 
   return (
     <div>
-      <label className="block mt-3 mb-1 text-xs text-editor-textMuted">
+      <label className="block mt-3 mb-1 text-xs text-text-muted">
         {label}
       </label>
       <div className="flex items-center space-x-2">
-        <button onClick={handleModeChange} className="p-1 text-xs rounded bg-button-bg dark:bg-button-bg-dark text-text-primary dark:text-text-primary-dark">
+        <button onClick={handleModeChange} className="p-1 text-xs rounded bg-button-bg text-text-primary">
           {mode === 'all' ? <LinkedIcon /> : <UnlinkedIcon />}
         </button>
         {mode === 'all' ? (
@@ -98,7 +98,7 @@ const SpacingInput = ({ label, value, onChange }: SpacingInputProps) => {
             type="text"
             value={values.top}
             onChange={(e) => handleChange('top', e.target.value)}
-            className="w-full p-2 text-xs rounded border bg-input-bg dark:bg-input-bg-dark text-text-primary dark:text-text-primary-dark border-input-border dark:border-input-border-dark"
+            className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
           />
         ) : (
           <div className="grid grid-cols-4 gap-2">
@@ -106,28 +106,28 @@ const SpacingInput = ({ label, value, onChange }: SpacingInputProps) => {
               type="text"
               value={values.top}
               onChange={(e) => handleChange('top', e.target.value)}
-              className="w-full p-2 text-xs rounded border bg-input-bg dark:bg-input-bg-dark text-text-primary dark:text-text-primary-dark border-input-border dark:border-input-border-dark"
+              className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
               placeholder="Top"
             />
             <input
               type="text"
               value={values.right}
               onChange={(e) => handleChange('right', e.target.value)}
-              className="w-full p-2 text-xs rounded border bg-input-bg dark:bg-input-bg-dark text-text-primary dark:text-text-primary-dark border-input-border dark:border-input-border-dark"
+              className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
               placeholder="Right"
             />
             <input
               type="text"
               value={values.bottom}
               onChange={(e) => handleChange('bottom', e.target.value)}
-              className="w-full p-2 text-xs rounded border bg-input-bg dark:bg-input-bg-dark text-text-primary dark:text-text-primary-dark border-input-border dark:border-input-border-dark"
+              className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
               placeholder="Bottom"
             />
             <input
               type="text"
               value={values.left}
               onChange={(e) => handleChange('left', e.target.value)}
-              className="w-full p-2 text-xs rounded border bg-input-bg dark:bg-input-bg-dark text-text-primary dark:text-text-primary-dark border-input-border dark:border-input-border-dark"
+              className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
               placeholder="Left"
             />
           </div>
