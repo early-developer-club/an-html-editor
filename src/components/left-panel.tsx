@@ -11,6 +11,7 @@ function LeftPanel() {
   const deleteElement = useEditorStore((state) => state.deleteElement)
   const loadTemplate = useEditorStore((state) => state.loadTemplate)
   const moveElement = useEditorStore((state) => state.moveElement)
+  const canvasTheme = useEditorStore((state) => state.canvasTheme)
   const [showAddMenu, setShowAddMenu] = useState(false)
   const [draggedElementId, setDraggedElementId] = useState<string | null>(null)
   const [dragOverElementId, setDragOverElementId] = useState<string | null>(null)
@@ -183,6 +184,14 @@ function LeftPanel() {
     const isDragging = draggedElementId === element.id
     const isDragOver = dragOverElementId === element.id
 
+    const getBackgroundColor = () => {
+      if (isDragging) return canvasTheme === 'dark' ? '#444444' : '#bbbbbb'
+      if (isDragOver) return '#0066cc33'
+      if (selectedElementId === element.id)
+        return canvasTheme === 'dark' ? '#094771' : '#0078d4'
+      return canvasTheme === 'dark' ? '#2d2d30' : '#e8e8e8'
+    }
+
     return (
       <div key={element.id}>
         <div
@@ -194,13 +203,8 @@ function LeftPanel() {
           onClick={() => selectElement(element.id)}
           style={{
             paddingLeft: `${8 + depth * 16}px`,
-            backgroundColor: isDragging
-              ? '#444444'
-              : isDragOver
-                ? '#0066cc33'
-                : selectedElementId === element.id
-                  ? '#094771'
-                  : '#2d2d30',
+            backgroundColor: getBackgroundColor(),
+            color: canvasTheme === 'dark' ? '#cccccc' : '#333333',
             opacity: isDragging ? 0.5 : 1,
             border: isDragOver ? '2px dashed #0066cc' : '2px solid transparent',
           }}
@@ -229,8 +233,19 @@ function LeftPanel() {
   }
 
   return (
-    <div className="flex flex-col overflow-hidden border-r bg-editor-panel border-editor-border">
-      <div className="p-3 px-4 font-semibold border-b text-sm bg-editor-panelHover text-editor-text border-editor-border">
+    <div
+      className="flex flex-col overflow-hidden border-r border-editor-border"
+      style={{
+        backgroundColor: canvasTheme === 'dark' ? '#252526' : '#f3f3f3',
+      }}
+    >
+      <div
+        className="p-3 px-4 font-semibold border-b text-sm border-editor-border"
+        style={{
+          backgroundColor: canvasTheme === 'dark' ? '#2d2d30' : '#e8e8e8',
+          color: canvasTheme === 'dark' ? '#cccccc' : '#333333',
+        }}
+      >
         레이어
       </div>
       <div className="flex-1 p-4 overflow-auto">
