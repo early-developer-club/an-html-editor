@@ -19,6 +19,9 @@ interface EditorState {
   // 캔버스 상태
   canvas: CanvasState
 
+  // 캔버스 배경 테마
+  canvasTheme: 'dark' | 'light'
+
   // 히스토리 (실행 취소/다시 실행)
   history: EditorHistory
 
@@ -38,6 +41,7 @@ interface EditorState {
   setZoom: (zoom: number) => void
   setPan: (x: number, y: number) => void
   resetCanvas: () => void
+  setCanvasTheme: (theme: 'dark' | 'light') => void
 
   // 히스토리 관련
   undo: () => void
@@ -65,6 +69,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   selectedElementId: null,
   assets: [],
   canvas: INITIAL_CANVAS_STATE,
+  canvasTheme: 'dark',
   history: INITIAL_HISTORY,
 
   // Actions
@@ -172,6 +177,10 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   resetCanvas: () => {
     set({ canvas: INITIAL_CANVAS_STATE })
+  },
+
+  setCanvasTheme: (theme) => {
+    set({ canvasTheme: theme })
   },
 
   undo: () => {
