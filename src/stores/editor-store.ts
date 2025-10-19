@@ -32,6 +32,7 @@ interface EditorState {
   deleteElement: (id: string) => void
   selectElement: (id: string | null) => void
   moveElement: (elementId: string, newParentId: string | null) => void
+  reorderElements: (elements: HTMLElement[]) => void
 
   // 에셋 관련
   addAsset: (asset: Asset) => void
@@ -148,6 +149,10 @@ export const useEditorStore = create<EditorState>((set) => ({
         ),
       }
     })
+  },
+
+  reorderElements: (elements) => {
+    set({ elements })
   },
 
   addAsset: (asset) => {

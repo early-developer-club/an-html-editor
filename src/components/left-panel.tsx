@@ -11,9 +11,11 @@ function LeftPanel() {
   const deleteElement = useEditorStore((state) => state.deleteElement)
   const loadTemplate = useEditorStore((state) => state.loadTemplate)
   const moveElement = useEditorStore((state) => state.moveElement)
+  const reorderElements = useEditorStore((state) => state.reorderElements)
   const [showAddMenu, setShowAddMenu] = useState(false)
   const [draggedElementId, setDraggedElementId] = useState<string | null>(null)
   const [dragOverElementId, setDragOverElementId] = useState<string | null>(null)
+  const [dropPosition, setDropPosition] = useState<'before' | 'after' | 'inside' | null>(null)
 
   const handleLoadTemplate = () => {
     if (
@@ -143,27 +145,82 @@ function LeftPanel() {
   const handleDragOver = (e: React.DragEvent, elementId: string) => {
     e.preventDefault()
     e.stopPropagation()
-    if (draggedElementId !== elementId) {
-      setDragOverElementId(elementId)
+
+    if (draggedElementId === elementId) {
+      setDragOverElementId(null)
+      setDropPosition(null)
+      return
     }
+
+    const rect = e.currentTarget.getBoundingClientRect()
+    const mouseY = e.clientY - rect.top
+    const height = rect.height
+
+    // 상단 25%: before, 중간 50%: inside, 하단 25%: after
+    if (mouseY < height * 0.25) {
+      setDropPosition('before')
+    } else if (mouseY > height * 0.75) {
+      setDropPosition('after')
+    } else {
+      setDropPosition('inside')
+    }
+
+    setDragOverElementId(elementId)
   }
 
   const handleDragEnd = () => {
     setDraggedElementId(null)
     setDragOverElementId(null)
+    setDropPosition(null)
   }
 
   const handleDrop = (e: React.DragEvent, targetElementId: string) => {
     e.preventDefault()
     e.stopPropagation()
 
-    if (draggedElementId && draggedElementId !== targetElementId) {
-      // targetElementId를 부모로 설정
+    if (!draggedElementId || draggedElementId === targetElementId) {
+      setDraggedElementId(null)
+      setDragOverElementId(null)
+      setDropPosition(null)
+      return
+    }
+
+    const draggedElement = elements.find((el) => el.id === draggedElementId)
+    const targetElement = elements.find((el) => el.id === targetElementId)
+
+    if (!draggedElement || !targetElement) {
+      setDraggedElementId(null)
+      setDragOverElementId(null)
+      setDropPosition(null)
+      return
+    }
+
+    if (dropPosition === 'inside') {
+      // 자식으로 삽입
       moveElement(draggedElementId, targetElementId)
+    } else {
+      // 형제로 삽입 (before 또는 after)
+      const newElements = [...elements]
+      const draggedIndex = newElements.findIndex((el) => el.id === draggedElementId)
+      const targetIndex = newElements.findIndex((el) => el.id === targetElementId)
+
+      // 드래그된 요소 제거
+      const [removed] = newElements.splice(draggedIndex, 1)
+
+      // 부모를 target과 같게 설정
+      removed.parentId = targetElement.parentId
+
+      // 새로운 위치에 삽입
+      const newTargetIndex = newElements.findIndex((el) => el.id === targetElementId)
+      const insertIndex = dropPosition === 'before' ? newTargetIndex : newTargetIndex + 1
+      newElements.splice(insertIndex, 0, removed)
+
+      reorderElements(newElements)
     }
 
     setDraggedElementId(null)
     setDragOverElementId(null)
+    setDropPosition(null)
   }
 
   // 루트 영역 드롭 (최상위로 이동)
@@ -174,6 +231,7 @@ function LeftPanel() {
     }
     setDraggedElementId(null)
     setDragOverElementId(null)
+    setDropPosition(null)
   }
 
   // 계층 구조 렌더링 함수
@@ -182,6 +240,18 @@ function LeftPanel() {
       elements.filter((el) => el.parentId === element.id).length > 0
     const isDragging = draggedElementId === element.id
     const isDragOver = dragOverElementId === element.id
+
+    // 드롭 위치에 따른 테두리 스타일
+    let borderClass = 'border-solid border-panel-border'
+    if (isDragOver && dropPosition === 'before') {
+      borderClass = 'border-t-4 border-t-blue-500 border-x border-b border-panel-border'
+    } else if (isDragOver && dropPosition === 'after') {
+      borderClass = 'border-b-4 border-b-blue-500 border-x border-t border-panel-border'
+    } else if (isDragOver && dropPosition === 'inside') {
+      borderClass = 'border-2 border-dashed border-blue-500'
+    } else if (!isDragOver) {
+      borderClass = 'border border-solid border-panel-border'
+    }
 
     return (
       <div key={element.id}>
@@ -196,11 +266,7 @@ function LeftPanel() {
             paddingLeft: `${8 + depth * 16}px`,
             opacity: isDragging ? 0.5 : 1,
           }}
-          className={`flex items-center justify-between p-2 mb-0.5 text-xs rounded cursor-grab text-text-primary border ${
-            isDragOver
-              ? 'border-dashed border-blue-500'
-              : 'border-solid border-panel-border'
-          } ${
+          className={`flex items-center justify-between p-2 mb-0.5 text-xs rounded cursor-grab text-text-primary ${borderClass} ${
             isDragging
               ? 'bg-gray-400 opacity-50'
               : selectedElementId === element.id
