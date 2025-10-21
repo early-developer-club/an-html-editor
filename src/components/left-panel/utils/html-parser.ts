@@ -105,22 +105,26 @@ export const parseHTMLToElements = (htmlString: string): ParseResult => {
       }
     })
 
-    // 자식 요소가 있는지 확인 (Element 노드만)
-    const hasElementChildren = Array.from(domElement.childNodes).some(
-      (child) => child.nodeType === Node.ELEMENT_NODE
-    )
+    // Block-level 자식 요소가 있는지 확인
+    // inline 요소(<br>, <span> 등)만 있으면 innerHTML로 처리
+    const inlineElements = ['br', 'span', 'strong', 'em', 'b', 'i', 'u', 'a']
+    const hasBlockChildren = Array.from(domElement.childNodes).some((child) => {
+      if (child.nodeType !== Node.ELEMENT_NODE) return false
+      const childTag = (child as Element).tagName.toLowerCase()
+      return !inlineElements.includes(childTag)
+    })
 
     // 텍스트 컨텐츠 추출
     let textContent = ''
     let innerHTML = ''
 
-    // 자식 Element가 없고 innerHTML이 있으면 (예: <div>text<br/>more text</div>)
-    if (!hasElementChildren && domElement.innerHTML) {
+    // Block 자식이 없고 innerHTML이 있으면 (예: <div>text<br/>more text</div>)
+    if (!hasBlockChildren && domElement.innerHTML) {
       innerHTML = domElement.innerHTML.trim()
       // textContent도 설정 (fallback용)
       textContent = domElement.textContent?.trim() || ''
     } else {
-      // 자식 Element가 있으면 textContent만 추출 (직접 자식 텍스트만)
+      // Block 자식이 있으면 textContent만 추출 (직접 자식 텍스트만)
       Array.from(domElement.childNodes).forEach((child) => {
         if (child.nodeType === Node.TEXT_NODE && child.textContent) {
           textContent += child.textContent.trim()
