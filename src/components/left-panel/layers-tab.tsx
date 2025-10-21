@@ -1,7 +1,10 @@
 import { useState } from 'react'
-import type { HTMLElement, HTMLElementType } from '../../types/editor'
+import type { HTMLElement } from '../../types/editor'
 import ElementTreeItem from './element-tree-item'
-import { createElementByType } from './utils/element-creator'
+import {
+  createElementByType,
+  type CreatableElementType,
+} from './utils/element-creator'
 
 interface LayersTabProps {
   elements: HTMLElement[]
@@ -34,7 +37,7 @@ function LayersTab({
     new Set()
   )
 
-  const handleAddElement = (type: HTMLElementType) => {
+  const handleAddElement = (type: CreatableElementType) => {
     const parentId = selectedElementId || undefined
     const newElement = createElementByType(type, parentId)
     onAddElement(newElement, parentId)

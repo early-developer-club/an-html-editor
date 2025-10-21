@@ -19,8 +19,14 @@ const createElement = (
   }
 }
 
-const ELEMENT_CONFIGS: Record<
+// 사용자가 직접 생성 가능한 요소 타입들만 포함
+export type CreatableElementType = Exclude<
   HTMLElementType,
+  'html' | 'head' | 'meta' | 'title' | 'style' | 'body'
+>
+
+const ELEMENT_CONFIGS: Record<
+  CreatableElementType,
   { tagName: string; content: string; style: React.CSSProperties }
 > = {
   section: {
@@ -84,7 +90,7 @@ const ELEMENT_CONFIGS: Record<
 }
 
 export const createElementByType = (
-  type: HTMLElementType,
+  type: CreatableElementType,
   parentId?: string
 ): HTMLElement => {
   const config = ELEMENT_CONFIGS[type]
