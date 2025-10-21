@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, Minus } from 'lucide-react'
+import { ChevronDown, ChevronRight, Minus, Trash2 } from 'lucide-react'
 import type { AHTMLElement } from '../../types/editor'
 
 interface ElementTreeItemProps {
@@ -112,9 +112,10 @@ function ElementTreeItem({
             e.stopPropagation()
             onDelete(element.id)
           }}
-          className="px-2 py-0.5 text-xs text-white border-none rounded cursor-pointer bg-red-600 hover:bg-red-700"
+          className="p-1 rounded cursor-pointer text-red-600 hover:bg-red-50 hover:text-red-700"
+          title="삭제"
         >
-          삭제
+          <Trash2 size={14} />
         </button>
       </div>
       {/* 자식 요소 렌더링 - 접혀있지 않을 때만 */}
