@@ -1,12 +1,47 @@
-import type { HTMLElement, HTMLElementType } from '../../../types/editor'
+import type {
+  HTMLElement,
+  HTMLElementType,
+  HTMLDocumentMetadata,
+} from '../../../types/editor'
 
-export const parseHTMLToElements = (htmlString: string): HTMLElement[] => {
+export interface ParseResult {
+  elements: HTMLElement[]
+  metadata: HTMLDocumentMetadata
+}
+
+export const parseHTMLToElements = (htmlString: string): ParseResult => {
   const parser = new DOMParser()
   const doc = parser.parseFromString(htmlString, 'text/html')
-  const bodyElement = doc.body
 
   const convertedElements: HTMLElement[] = []
   let idCounter = Date.now()
+
+  // DOCTYPE 추출
+  const doctype = doc.doctype?.name || 'html'
+
+  // html 태그의 속성 추출
+  const htmlElement = doc.documentElement
+  const htmlAttributes: Record<string, string> = {}
+  if (htmlElement) {
+    Array.from(htmlElement.attributes).forEach((attr) => {
+      htmlAttributes[attr.name] = attr.value
+    })
+  }
+
+  // head 내용을 원본 그대로 추출
+  const headElement = doc.head
+  let headContent = ''
+  if (headElement) {
+    headContent = headElement.innerHTML
+  }
+
+  const metadata: HTMLDocumentMetadata = {
+    doctype,
+    htmlAttributes,
+    headContent,
+  }
+
+  const bodyElement = doc.body
 
   // CSS 문자열을 React style 객체로 변환
   const parseStyleString = (styleString: string): React.CSSProperties => {
@@ -45,8 +80,8 @@ export const parseHTMLToElements = (htmlString: string): HTMLElement[] => {
     const domElement = node as Element
     const tagName = domElement.tagName.toLowerCase()
 
-    // html, head, body 태그는 스킵
-    if (['html', 'head', 'body', 'meta', 'title'].includes(tagName)) {
+    // body 태그만 스킵 (body의 자식들만 처리)
+    if (tagName === 'body') {
       // 자식 노드들만 처리
       Array.from(domElement.childNodes).forEach((child) => {
         const converted = convertNode(child, parentId)
@@ -61,6 +96,15 @@ export const parseHTMLToElements = (htmlString: string): HTMLElement[] => {
     const styleAttr = domElement.getAttribute('style')
     const style = styleAttr ? parseStyleString(styleAttr) : {}
 
+    // 모든 HTML 속성 추출
+    const attributes: Record<string, string> = {}
+    Array.from(domElement.attributes).forEach((attr) => {
+      // style 속성은 별도로 처리하므로 제외
+      if (attr.name !== 'style') {
+        attributes[attr.name] = attr.value
+      }
+    })
+
     // 텍스트 컨텐츠 추출 (직접 자식 텍스트만)
     let textContent = ''
     Array.from(domElement.childNodes).forEach((child) => {
@@ -74,6 +118,7 @@ export const parseHTMLToElements = (htmlString: string): HTMLElement[] => {
       type: tagName as HTMLElementType,
       tagName: tagName,
       textContent: textContent || '',
+      attributes: Object.keys(attributes).length > 0 ? attributes : undefined,
       style,
       children: [],
       parentId,
@@ -108,5 +153,8 @@ export const parseHTMLToElements = (htmlString: string): HTMLElement[] => {
     convertNode(child, null)
   })
 
-  return convertedElements
+  return {
+    elements: convertedElements,
+    metadata,
+  }
 }
