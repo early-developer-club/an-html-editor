@@ -22,21 +22,32 @@ export function useTextEditTrigger({
 
     if (!iframeDoc) return
 
-    const element = iframeDoc.querySelector(
-      `[data-element-id="${elementId}"]`
-    ) as HTMLElement
+    // requestAnimationFrame으로 DOM 렌더링 완료 후 실행
+    requestAnimationFrame(() => {
+      const element = iframeDoc.querySelector(
+        `[data-element-id="${elementId}"]`
+      ) as HTMLElement
 
-    if (element) {
-      onSetEditingElementId(elementId)
-      element.contentEditable = 'true'
-      element.focus()
+      if (element) {
+        onSetEditingElementId(elementId)
+        element.contentEditable = 'true'
 
-      // 텍스트 전체 선택
-      const selection = iframeDoc.getSelection()
-      const range = iframeDoc.createRange()
-      range.selectNodeContents(element)
-      selection?.removeAllRanges()
-      selection?.addRange(range)
-    }
+        // focus와 selection을 순차적으로 처리
+        requestAnimationFrame(() => {
+          element.focus()
+
+          // 한 프레임 더 기다린 후 텍스트 선택
+          requestAnimationFrame(() => {
+            const selection = iframeDoc.getSelection()
+            if (selection) {
+              const range = iframeDoc.createRange()
+              range.selectNodeContents(element)
+              selection.removeAllRanges()
+              selection.addRange(range)
+            }
+          })
+        })
+      }
+    })
   }, [elementId, iframeRef, onSetEditingElementId])
 }

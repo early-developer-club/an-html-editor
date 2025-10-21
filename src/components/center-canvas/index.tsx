@@ -44,7 +44,7 @@ function CenterCanvas() {
     if (selectedElementId) {
       setEditTrigger(selectedElementId)
       // 트리거 후 리셋 (재트리거 가능하도록)
-      setTimeout(() => setEditTrigger(null), 100)
+      setTimeout(() => setEditTrigger(null), 300)
     }
   }
 
@@ -71,6 +71,7 @@ function CenterCanvas() {
           elementId={selectedElementId}
           elements={elements}
           position={deleteButtonPos}
+          isEditing={editingElementId === selectedElementId}
           onDelete={() => deleteElement(selectedElementId)}
           onEdit={handleEdit}
           onUpdateImage={handleUpdateImage}

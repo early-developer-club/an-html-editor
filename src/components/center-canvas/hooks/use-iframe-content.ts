@@ -93,14 +93,22 @@ export function useIframeContent({
       if (elementId && isTextOnlyElement(elementId, elements)) {
         onSetEditingElementId(elementId)
         target.contentEditable = 'true'
-        target.focus()
 
-        // 텍스트 전체 선택
-        const selection = iframeDoc.getSelection()
-        const range = iframeDoc.createRange()
-        range.selectNodeContents(target)
-        selection?.removeAllRanges()
-        selection?.addRange(range)
+        // focus와 selection을 순차적으로 처리
+        requestAnimationFrame(() => {
+          target.focus()
+
+          // 한 프레임 더 기다린 후 텍스트 선택
+          requestAnimationFrame(() => {
+            const selection = iframeDoc.getSelection()
+            if (selection) {
+              const range = iframeDoc.createRange()
+              range.selectNodeContents(target)
+              selection.removeAllRanges()
+              selection.addRange(range)
+            }
+          })
+        })
 
         target.removeEventListener('keydown', handleKeyDown)
         target.addEventListener('keydown', handleKeyDown)
