@@ -106,8 +106,9 @@ export const parseHTMLToElements = (htmlString: string): ParseResult => {
     })
 
     // Block-level 자식 요소가 있는지 확인
-    // inline 요소(<br>, <span> 등)만 있으면 innerHTML로 처리
-    const inlineElements = ['br', 'span', 'strong', 'em', 'b', 'i', 'u', 'a']
+    // br만 inline으로 처리 (텍스트와 함께 innerHTML로 저장)
+    // span, strong 등은 별도 요소로 처리
+    const inlineElements = ['br']
     const hasBlockChildren = Array.from(domElement.childNodes).some((child) => {
       if (child.nodeType !== Node.ELEMENT_NODE) return false
       const childTag = (child as Element).tagName.toLowerCase()
