@@ -8,6 +8,7 @@ interface ElementActionButtonsProps {
   elementId: string
   elements: AHTMLElement[]
   position: { top: number; right: number }
+  isEditing: boolean
   onDelete: () => void
   onEdit: () => void
   onUpdateImage: (newSrc: string) => void
@@ -17,6 +18,7 @@ function ElementActionButtons({
   elementId,
   elements,
   position,
+  isEditing,
   onDelete,
   onEdit,
   onUpdateImage,
@@ -33,7 +35,7 @@ function ElementActionButtons({
       }}
     >
       {/* 텍스트 요소: 편집 버튼 */}
-      {isText && <EditButton onEdit={onEdit} />}
+      {isText && <EditButton isEditing={isEditing} onEdit={onEdit} />}
 
       {/* 이미지 요소: 이미지 URL 변경 버튼 */}
       {isImage && element && (
