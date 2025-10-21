@@ -24,6 +24,12 @@ export type HTMLElementType =
   | 'ul'
   | 'ol'
   | 'li'
+  | 'html'
+  | 'head'
+  | 'meta'
+  | 'title'
+  | 'style'
+  | 'body'
 
 // 인라인 스타일 속성 (쇼핑몰 플랫폼 호환성을 위해 인라인만 사용)
 // React의 CSSProperties를 사용하여 타입 안정성 확보
@@ -44,6 +50,13 @@ export interface HTMLElement {
   style: ElementStyle
   children: HTMLElement[]
   parentId: string | null
+}
+
+// HTML 문서의 메타데이터 (DOCTYPE, html 속성, head 내용 등)
+export interface HTMLDocumentMetadata {
+  doctype: string // 예: "html"
+  htmlAttributes: Record<string, string> // 예: { lang: "ko" }
+  headContent: string // head 태그 내부의 원본 HTML 문자열
 }
 
 // 에셋 (이미지, 아이콘 등)
