@@ -159,11 +159,14 @@ export const parseHTMLToElements = (htmlString: string): ParseResult => {
     convertedElements.push(newElement)
 
     // 자식 요소 처리
-    Array.from(domElement.childNodes).forEach((child) => {
-      if (child.nodeType === Node.ELEMENT_NODE) {
-        convertNode(child, id)
-      }
-    })
+    // innerHTML을 사용하는 경우 자식을 별도로 처리하지 않음 (이미 innerHTML에 포함)
+    if (!newElement.innerHTML) {
+      Array.from(domElement.childNodes).forEach((child) => {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+          convertNode(child, id)
+        }
+      })
+    }
 
     return newElement
   }
