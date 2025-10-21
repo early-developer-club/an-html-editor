@@ -13,7 +13,15 @@ function RightPanel() {
 
   const handleTextContentChange = (value: string) => {
     if (selectedElement) {
-      updateElement(selectedElement.id, { textContent: value })
+      // innerHTML이 있었던 경우, innerHTML도 함께 업데이트
+      if (selectedElement.innerHTML !== undefined) {
+        updateElement(selectedElement.id, {
+          textContent: value.replace(/<br\s*\/?>/gi, ''), // br 태그 제거한 순수 텍스트
+          innerHTML: value, // <br> 태그 포함된 HTML
+        })
+      } else {
+        updateElement(selectedElement.id, { textContent: value })
+      }
     }
   }
 
@@ -63,13 +71,23 @@ function RightPanel() {
               <div className="pb-3 mb-3 border-b border-panel-border">
                 <label className="block mt-3 mb-1 text-xs text-text-muted">
                   텍스트 내용
+                  {selectedElement.innerHTML && (
+                    <span className="ml-1 text-[10px] text-amber-600">
+                      (HTML 태그 사용 가능)
+                    </span>
+                  )}
                 </label>
                 <textarea
-                  value={selectedElement.textContent || ''}
+                  value={selectedElement.innerHTML || selectedElement.textContent || ''}
                   onChange={(e) => handleTextContentChange(e.target.value)}
-                  className="w-full p-2 text-xs rounded resize-y min-h-20 border font-inherit bg-input-bg text-text-primary border-input-border"
-                  placeholder="텍스트를 입력하세요"
+                  className="w-full p-2 text-xs rounded resize-y min-h-20 border font-mono bg-input-bg text-text-primary border-input-border"
+                  placeholder="텍스트를 입력하세요 (줄바꿈: <br />)"
                 />
+                {selectedElement.innerHTML && (
+                  <p className="mt-1 text-[10px] text-text-muted">
+                    💡 &lt;br /&gt; 태그로 줄바꿈을 추가할 수 있습니다
+                  </p>
+                )}
               </div>
             )}
 
