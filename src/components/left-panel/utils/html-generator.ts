@@ -1,6 +1,12 @@
-import type { HTMLElement } from '../../../types/editor'
+import type {
+  HTMLElement,
+  HTMLDocumentMetadata,
+} from '../../../types/editor'
 
-export const generateHTML = (elements: HTMLElement[]): string => {
+export const generateHTML = (
+  elements: HTMLElement[],
+  metadata?: HTMLDocumentMetadata | null
+): string => {
   // 요소를 HTML 문자열로 변환하는 재귀 함수
   const elementToHTML = (element: HTMLElement, indent: number = 0): string => {
     const indentation = '  '.repeat(indent)
@@ -17,22 +23,47 @@ export const generateHTML = (elements: HTMLElement[]): string => {
           .join('; ')
       : ''
 
+    // 일반 속성들을 HTML 속성 문자열로 변환
+    const attributesString = element.attributes
+      ? Object.entries(element.attributes)
+          .map(([key, value]) => `${key}="${value}"`)
+          .join(' ')
+      : ''
+
     // img 태그 처리
     if (element.tagName === 'img') {
-      return `${indentation}<img src="${element.src || ''}" alt="${element.alt || ''}"${styleString ? ` style="${styleString}"` : ''} />`
+      const attrs = [
+        element.src ? `src="${element.src}"` : '',
+        element.alt ? `alt="${element.alt}"` : '',
+        attributesString,
+        styleString ? `style="${styleString}"` : '',
+      ]
+        .filter(Boolean)
+        .join(' ')
+      return `${indentation}<img ${attrs} />`
     }
 
     // a 태그 처리
     if (element.tagName === 'a') {
       const href = element.href || '#'
+      const attrs = [
+        `href="${href}"`,
+        attributesString,
+        styleString ? `style="${styleString}"` : '',
+      ]
+        .filter(Boolean)
+        .join(' ')
       const content =
         element.textContent ||
         children.map((child) => elementToHTML(child, indent + 1)).join('\n')
-      return `${indentation}<a href="${href}"${styleString ? ` style="${styleString}"` : ''}>${children.length > 0 ? '\n' + content + '\n' + indentation : element.textContent || ''}</a>`
+      return `${indentation}<a ${attrs}>${children.length > 0 ? '\n' + content + '\n' + indentation : element.textContent || ''}</a>`
     }
 
     // 일반 태그 처리
-    const openTag = `${indentation}<${element.tagName}${styleString ? ` style="${styleString}"` : ''}>`
+    const allAttrs = [attributesString, styleString ? `style="${styleString}"` : '']
+      .filter(Boolean)
+      .join(' ')
+    const openTag = `${indentation}<${element.tagName}${allAttrs ? ' ' + allAttrs : ''}>`
     const closeTag = `${indentation}</${element.tagName}>`
 
     if (element.textContent && children.length === 0) {
@@ -55,7 +86,24 @@ export const generateHTML = (elements: HTMLElement[]): string => {
     .map((el) => elementToHTML(el, 2))
     .join('\n')
 
-  // 완전한 HTML 문서 생성
+  // 메타데이터가 있으면 원본 그대로 사용, 없으면 기본값 사용
+  if (metadata) {
+    const htmlAttrs = Object.entries(metadata.htmlAttributes)
+      .map(([key, value]) => `${key}="${value}"`)
+      .join(' ')
+
+    return `<!DOCTYPE ${metadata.doctype}>
+<html${htmlAttrs ? ' ' + htmlAttrs : ''}>
+  <head>
+${metadata.headContent}
+  </head>
+  <body>
+${bodyContent}
+  </body>
+</html>`
+  }
+
+  // 기본 HTML 문서 생성 (메타데이터 없을 때)
   return `<!DOCTYPE html>
 <html lang="ko">
   <head>
