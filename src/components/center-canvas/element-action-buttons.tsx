@@ -24,7 +24,6 @@ function ElementActionButtons({
   const element = findElement(elementId, elements)
   const isText = isTextOnlyElement(elementId, elements)
   const isImage = isImageElement(elementId, elements)
-  console.log(element)
   return (
     <div
       className="fixed z-50 flex gap-1"
