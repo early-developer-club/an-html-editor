@@ -1,109 +1,95 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useEditorStore } from '../stores/editor-store'
-import type { HTMLElement } from '../types/editor'
+import { generateHTML } from './left-panel/utils/html-generator'
 
 function CenterCanvas() {
   const elements = useEditorStore((state) => state.elements)
+  const documentMetadata = useEditorStore((state) => state.documentMetadata)
   const selectedElementId = useEditorStore((state) => state.selectedElementId)
   const selectElement = useEditorStore((state) => state.selectElement)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+
+  // iframe에 HTML 주입 및 클릭 이벤트 설정
+  useEffect(() => {
+    if (!iframeRef.current || elements.length === 0) return
+
+    const iframe = iframeRef.current
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document
+
+    if (!iframeDoc) return
+
+    // 완전한 HTML 생성
+    const htmlContent = generateHTML(elements, documentMetadata)
+
+    // iframe에 HTML 주입
+    iframeDoc.open()
+    iframeDoc.write(htmlContent)
+    iframeDoc.close()
+
+    // 클릭 이벤트 리스너 추가
+    const handleClick = (e: MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      const target = e.target as HTMLElement
+      const elementId = target.getAttribute('data-element-id')
+
+      if (elementId) {
+        selectElement(elementId)
+      } else {
+        selectElement(null)
+      }
+    }
+
+    // body에 이벤트 리스너 추가
+    iframeDoc.body.addEventListener('click', handleClick)
+
+    // 모든 요소에 data-element-id와 스타일 추가
+    const addElementAttributes = () => {
+      elements.forEach((element) => {
+        const domElement = iframeDoc.querySelector(
+          `[data-element-id="${element.id}"]`
+        ) as HTMLElement
+
+        if (domElement) {
+          // 선택 표시
+          if (element.id === selectedElementId) {
+            domElement.style.outline = '2px solid #0066cc'
+            domElement.style.outlineOffset = '2px'
+          } else {
+            domElement.style.outline = 'none'
+          }
+
+          // 클릭 가능하도록 커서 설정
+          domElement.style.cursor = 'pointer'
+        }
+      })
+    }
+
+    // 초기 속성 설정 및 렌더링 후 재설정
+    setTimeout(addElementAttributes, 0)
+
+    return () => {
+      iframeDoc.body.removeEventListener('click', handleClick)
+    }
+  }, [elements, documentMetadata, selectedElementId, selectElement])
 
   // 선택된 요소로 스크롤
   useEffect(() => {
-    if (selectedElementId) {
-      const element = document.querySelector(
-        `[data-element-id="${selectedElementId}"]`
-      )
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
+    if (!selectedElementId || !iframeRef.current) return
+
+    const iframe = iframeRef.current
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document
+
+    if (!iframeDoc) return
+
+    const element = iframeDoc.querySelector(
+      `[data-element-id="${selectedElementId}"]`
+    )
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }, [selectedElementId])
-
-  const renderElement = (element: HTMLElement) => {
-    const isSelected = element.id === selectedElementId
-
-    // 자식 요소 찾기
-    const children = elements.filter((el) => el.parentId === element.id)
-
-    // img 태그 특수 처리
-    if (element.tagName === 'img') {
-      return (
-        <img
-          key={element.id}
-          data-element-id={element.id}
-          src={element.src || ''}
-          alt={element.alt || ''}
-          onClick={(e: React.MouseEvent) => {
-            e.stopPropagation()
-            selectElement(element.id)
-          }}
-          style={{
-            ...element.style,
-            outline: isSelected ? '2px solid #0066cc' : 'none',
-            cursor: 'pointer',
-            position: 'relative',
-            zIndex: isSelected ? 1000 : 'auto',
-          }}
-        />
-      )
-    }
-
-    // a 태그 특수 처리
-    if (element.tagName === 'a') {
-      return (
-        <a
-          key={element.id}
-          data-element-id={element.id}
-          href={element.href || '#'}
-          onClick={(e: React.MouseEvent) => {
-            e.preventDefault()
-            e.stopPropagation()
-            selectElement(element.id)
-          }}
-          style={{
-            ...element.style,
-            outline: isSelected ? '2px solid #0066cc' : 'none',
-            cursor: 'pointer',
-            position: 'relative',
-            zIndex: isSelected ? 1000 : 'auto',
-          }}
-        >
-          {element.textContent
-            ? element.textContent
-            : children.length > 0
-              ? children.map(renderElement)
-              : null}
-        </a>
-      )
-    }
-
-    // 일반 태그
-    const Tag = element.tagName as keyof JSX.IntrinsicElements
-    return (
-      <Tag
-        key={element.id}
-        data-element-id={element.id}
-        onClick={(e: React.MouseEvent) => {
-          e.stopPropagation()
-          selectElement(element.id)
-        }}
-        style={{
-          ...element.style,
-          outline: isSelected ? '2px solid #0066cc' : 'none',
-          cursor: 'pointer',
-          position: 'relative',
-          zIndex: isSelected ? 1000 : 'auto',
-        }}
-      >
-        {/* 텍스트 컨텐츠가 있으면 표시, 없으면 자식 요소 렌더링 */}
-        {element.textContent
-          ? element.textContent
-          : children.length > 0
-            ? children.map(renderElement)
-            : null}
-      </Tag>
-    )
-  }
 
   return (
     <div className="relative flex flex-col overflow-hidden bg-canvas-bg">
@@ -118,18 +104,18 @@ function CenterCanvas() {
             </p>
           </div>
         ) : (
-          <div
-            onClick={() => selectElement(null)}
+          <iframe
+            ref={iframeRef}
+            title="Preview Canvas"
             style={{
               width: '100%',
               maxWidth: '960px',
-              backgroundColor: 'white',
               minHeight: '100vh',
+              border: 'none',
+              backgroundColor: 'white',
               boxShadow: '0 0 20px rgba(0,0,0,0.3)',
             }}
-          >
-            {elements.filter((el) => el.parentId === null).map(renderElement)}
-          </div>
+          />
         )}
       </div>
     </div>

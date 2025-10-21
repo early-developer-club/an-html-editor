@@ -733,6 +733,7 @@ export const SAMPLE_TEMPLATE: HTMLElement[] = [
   },
 ]
 
+
 // 부모-자식 관계를 기반으로 children 배열을 채우는 함수
 export function buildElementTree(elements: HTMLElement[]): HTMLElement[] {
   const elementMap = new Map(elements.map((el) => [el.id, { ...el }]))

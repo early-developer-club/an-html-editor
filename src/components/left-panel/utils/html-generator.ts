@@ -24,11 +24,13 @@ export const generateHTML = (
       : ''
 
     // 일반 속성들을 HTML 속성 문자열로 변환
-    const attributesString = element.attributes
-      ? Object.entries(element.attributes)
-          .map(([key, value]) => `${key}="${value}"`)
-          .join(' ')
-      : ''
+    const attributes = {
+      ...element.attributes,
+      'data-element-id': element.id, // 에디터에서 요소 선택을 위해 추가
+    }
+    const attributesString = Object.entries(attributes)
+      .map(([key, value]) => `${key}="${value}"`)
+      .join(' ')
 
     // img 태그 처리
     if (element.tagName === 'img') {
