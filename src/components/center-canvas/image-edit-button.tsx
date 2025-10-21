@@ -59,9 +59,16 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
     )
   }
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsEditing(true)
+  }
+
   return (
     <button
-      onClick={() => setIsEditing(true)}
+      onMouseDown={(e) => e.preventDefault()} // 포커스 이동 방지
+      onClick={handleClick}
       className="p-1 rounded bg-white border border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700 shadow-lg cursor-pointer"
       title="이미지 URL 변경"
     >
