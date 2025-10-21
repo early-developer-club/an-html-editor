@@ -4,11 +4,15 @@ import type {
   Asset,
   CanvasState,
   EditorHistory,
+  HTMLDocumentMetadata,
 } from '../types/editor'
 
 interface EditorState {
   // 페이지 요소들 (DOM 트리)
   elements: HTMLElement[]
+
+  // HTML 문서 메타데이터 (DOCTYPE, html 속성, head 내용 등)
+  documentMetadata: HTMLDocumentMetadata | null
 
   // 선택된 요소 ID
   selectedElementId: string | null
@@ -50,7 +54,11 @@ interface EditorState {
 
   // 유틸리티
   clearAll: () => void
-  loadTemplate: (elements: HTMLElement[]) => void
+  loadTemplate: (
+    elements: HTMLElement[],
+    metadata?: HTMLDocumentMetadata
+  ) => void
+  setDocumentMetadata: (metadata: HTMLDocumentMetadata) => void
 }
 
 const INITIAL_CANVAS_STATE: CanvasState = {
@@ -67,6 +75,7 @@ const INITIAL_HISTORY: EditorHistory = {
 export const useEditorStore = create<EditorState>((set) => ({
   // Initial state
   elements: [],
+  documentMetadata: null,
   selectedElementId: null,
   assets: [],
   canvas: INITIAL_CANVAS_STATE,
@@ -201,6 +210,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   clearAll: () => {
     set({
       elements: [],
+      documentMetadata: null,
       selectedElementId: null,
       assets: [],
       canvas: INITIAL_CANVAS_STATE,
@@ -208,10 +218,15 @@ export const useEditorStore = create<EditorState>((set) => ({
     })
   },
 
-  loadTemplate: (elements) => {
+  loadTemplate: (elements, metadata) => {
     set({
       elements: elements,
+      documentMetadata: metadata || null,
       selectedElementId: null,
     })
+  },
+
+  setDocumentMetadata: (metadata) => {
+    set({ documentMetadata: metadata })
   },
 }))
