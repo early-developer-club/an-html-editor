@@ -1,3 +1,4 @@
+import { FileCode } from 'lucide-react'
 import { useState } from 'react'
 import type { AHTMLElement } from '../../types/editor'
 import ElementTreeItem from './element-tree-item'
@@ -9,8 +10,11 @@ import {
 interface LayersTabProps {
   elements: AHTMLElement[]
   selectedElementId: string | null
+  isMetadataSelected: boolean
+  hasMetadata: boolean
   onAddElement: (element: AHTMLElement, parentId?: string) => void
   onSelectElement: (id: string | null) => void
+  onSelectMetadata: () => void
   onDeleteElement: (id: string) => void
   onMoveElement: (elementId: string, newParentId: string | null) => void
   onReorderElements: (elements: AHTMLElement[]) => void
@@ -19,8 +23,11 @@ interface LayersTabProps {
 function LayersTab({
   elements,
   selectedElementId,
+  isMetadataSelected,
+  hasMetadata,
   onAddElement,
   onSelectElement,
+  onSelectMetadata,
   onDeleteElement,
   onMoveElement,
   onReorderElements,
@@ -163,14 +170,32 @@ function LayersTab({
   return (
     <>
       {/* 요소 추가 버튼 */}
-      <div className="relative mb-4">
+      <div className="relative mb-1">
+        {/* 메타데이터 레이어 */}
+        {hasMetadata && (
+          <div
+            onClick={onSelectMetadata}
+            className={`h-9 flex items-center justify-between p-2 mb-2 text-xs rounded cursor-pointer border ${
+              isMetadataSelected
+                ? 'bg-item-selected border-blue-500'
+                : 'bg-item-bg border-panel-border hover:bg-item-hover'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <FileCode size={16} className="text-purple-600" />
+              <span className="font-semibold">문서 메타데이터</span>
+              <span className="text-[10px] text-text-muted opacity-70">
+                (HTML head)
+              </span>
+            </div>
+          </div>
+        )}
+
         <button
           onClick={() => setShowAddMenu(!showAddMenu)}
-          className="w-full p-2 text-sm text-white border-none rounded cursor-pointer bg-blue-600 hover:bg-blue-700"
+          className="w-full h-9 p-2 text-sm text-white border-none rounded cursor-pointer bg-blue-600 hover:bg-blue-700"
         >
-          {selectedElementId
-            ? `+ 선택된 요소의 자식으로 추가`
-            : '+ 요소 추가'}
+          {selectedElementId ? `+ 선택된 요소의 자식으로 추가` : '+ 요소 추가'}
         </button>
         {selectedElementId && (
           <p className="w-full mt-1 text-xs text-text-muted text-center">
@@ -218,7 +243,7 @@ function LayersTab({
           }}
           onDragLeave={() => setDragOverElementId(null)}
           onDrop={handleDropToRoot}
-          className={`p-1 min-h-[100px] rounded ${dragOverElementId === 'root' ? 'border-2 border-dashed border-blue-500 bg-blue-500/10' : 'border-2 border-dashed border-transparent'}`}
+          className={`py-1 min-h-[100px] rounded ${dragOverElementId === 'root' ? 'border-2 border-dashed border-blue-500 bg-blue-500/10' : 'border-2 border-dashed border-transparent'}`}
         >
           {elements
             .filter((el) => el.parentId === null)

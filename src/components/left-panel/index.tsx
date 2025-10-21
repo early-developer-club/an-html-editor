@@ -8,8 +8,10 @@ function LeftPanel() {
   const elements = useEditorStore((state) => state.elements)
   const documentMetadata = useEditorStore((state) => state.documentMetadata)
   const selectedElementId = useEditorStore((state) => state.selectedElementId)
+  const isMetadataSelected = useEditorStore((state) => state.isMetadataSelected)
   const addElement = useEditorStore((state) => state.addElement)
   const selectElement = useEditorStore((state) => state.selectElement)
+  const selectMetadata = useEditorStore((state) => state.selectMetadata)
   const deleteElement = useEditorStore((state) => state.deleteElement)
   const loadTemplate = useEditorStore((state) => state.loadTemplate)
   const moveElement = useEditorStore((state) => state.moveElement)
@@ -60,8 +62,11 @@ function LeftPanel() {
           <LayersTab
             elements={elements}
             selectedElementId={selectedElementId}
+            isMetadataSelected={isMetadataSelected}
+            hasMetadata={documentMetadata !== null}
             onAddElement={addElement}
             onSelectElement={selectElement}
+            onSelectMetadata={selectMetadata}
             onDeleteElement={deleteElement}
             onMoveElement={moveElement}
             onReorderElements={reorderElements}
