@@ -4,8 +4,11 @@ import { Sun, Moon } from 'lucide-react'
 
 function RightPanel() {
   const selectedElementId = useEditorStore((state) => state.selectedElementId)
+  const isMetadataSelected = useEditorStore((state) => state.isMetadataSelected)
+  const documentMetadata = useEditorStore((state) => state.documentMetadata)
   const elements = useEditorStore((state) => state.elements)
   const updateElement = useEditorStore((state) => state.updateElement)
+  const setDocumentMetadata = useEditorStore((state) => state.setDocumentMetadata)
   const canvasTheme = useEditorStore((state) => state.canvasTheme)
   const setCanvasTheme = useEditorStore((state) => state.setCanvasTheme)
 
@@ -40,6 +43,15 @@ function RightPanel() {
     }
   }
 
+  const handleMetadataChange = (field: 'doctype' | 'htmlAttributes' | 'headContent', value: string | Record<string, string>) => {
+    if (documentMetadata) {
+      setDocumentMetadata({
+        ...documentMetadata,
+        [field]: value,
+      })
+    }
+  }
+
   return (
     <div className="flex flex-col overflow-hidden border-l bg-panel-bg border-panel-border">
       <div className="flex items-center justify-between p-3 px-4 font-semibold border-b text-sm bg-panel-header text-text-primary border-panel-border">
@@ -55,7 +67,66 @@ function RightPanel() {
         </button>
       </div>
       <div className="flex-1 p-4 overflow-auto text-text-primary">
-        {selectedElement ? (
+        {isMetadataSelected && documentMetadata ? (
+          <div>
+            {/* 메타데이터 편집 */}
+            <div className="pb-3 mb-3 border-b border-panel-border">
+              <h3 className="mb-2 text-sm font-semibold">문서 메타데이터</h3>
+              <p className="text-xs text-text-muted mb-3">
+                HTML 문서의 head 내용을 편집합니다
+              </p>
+            </div>
+
+            {/* DOCTYPE */}
+            <div className="pb-3 mb-3 border-b border-panel-border">
+              <h4 className="mb-2 text-xs text-text-primary font-semibold">DOCTYPE</h4>
+              <input
+                type="text"
+                value={documentMetadata.doctype}
+                onChange={(e) => handleMetadataChange('doctype', e.target.value)}
+                className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
+                placeholder="html"
+              />
+            </div>
+
+            {/* HTML Attributes */}
+            <div className="pb-3 mb-3 border-b border-panel-border">
+              <h4 className="mb-2 text-xs text-text-primary font-semibold">HTML 속성</h4>
+              <label className="block mb-1 text-xs text-text-muted">
+                언어 (lang)
+              </label>
+              <input
+                type="text"
+                value={documentMetadata.htmlAttributes.lang || ''}
+                onChange={(e) =>
+                  handleMetadataChange('htmlAttributes', {
+                    ...documentMetadata.htmlAttributes,
+                    lang: e.target.value,
+                  })
+                }
+                className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
+                placeholder="ko"
+              />
+            </div>
+
+            {/* Head Content */}
+            <div>
+              <h4 className="mb-2 text-xs text-text-primary font-semibold">HEAD 내용</h4>
+              <p className="mb-2 text-[10px] text-text-muted">
+                💡 meta 태그, style 태그, link 태그 등을 포함한 전체 head 내용
+              </p>
+              <textarea
+                value={documentMetadata.headContent}
+                onChange={(e) => handleMetadataChange('headContent', e.target.value)}
+                className="w-full p-2 text-xs rounded resize-y min-h-[300px] font-mono border bg-input-bg text-text-primary border-input-border"
+                placeholder="<meta charset='UTF-8'>&#10;<style>&#10;  :root {&#10;    --primary-color: #007bff;&#10;  }&#10;</style>"
+              />
+              <p className="mt-1 text-[10px] text-text-muted">
+                ⚠️ :root 변수나 @import 글꼴을 직접 수정할 수 있습니다
+              </p>
+            </div>
+          </div>
+        ) : selectedElement ? (
           <div>
             {/* 기본 정보 */}
             <div className="pb-3 mb-3 border-b border-panel-border">
