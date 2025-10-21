@@ -1,4 +1,5 @@
 import { ChevronDown, ChevronRight, Minus, Trash2 } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 import type { AHTMLElement } from '../../types/editor'
 
 interface ElementTreeItemProps {
@@ -36,11 +37,22 @@ function ElementTreeItem({
   onDelete,
   onToggleCollapse,
 }: ElementTreeItemProps) {
+  const elementRef = useRef<HTMLDivElement>(null)
   const hasChildren =
     allElements.filter((el) => el.parentId === element.id).length > 0
   const isDragging = draggedElementId === element.id
   const isDragOver = dragOverElementId === element.id
   const isCollapsed = collapsedElements.has(element.id)
+
+  // 선택된 요소로 스크롤
+  useEffect(() => {
+    if (selectedElementId === element.id && elementRef.current) {
+      elementRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      })
+    }
+  }, [selectedElementId, element.id])
 
   // 드롭 위치에 따른 테두리 스타일
   let borderClass = 'border-solid border-panel-border'
@@ -59,6 +71,7 @@ function ElementTreeItem({
   return (
     <div>
       <div
+        ref={elementRef}
         draggable
         onDragStart={(e) => onDragStart(e, element.id)}
         onDragOver={(e) => onDragOver(e, element.id)}

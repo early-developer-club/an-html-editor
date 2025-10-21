@@ -97,6 +97,10 @@ export const useEditorStore = create<EditorState>((set) => ({
 
       return {
         elements: [...state.elements, newElement],
+        history: {
+          past: [...state.history.past, state.elements],
+          future: [],
+        },
       }
     })
   },
@@ -106,6 +110,10 @@ export const useEditorStore = create<EditorState>((set) => ({
       elements: state.elements.map((el) =>
         el.id === id ? { ...el, ...updates } : el
       ),
+      history: {
+        past: [...state.history.past, state.elements],
+        future: [],
+      },
     }))
   },
 
@@ -126,6 +134,10 @@ export const useEditorStore = create<EditorState>((set) => ({
         elements: state.elements.filter((el) => !idsToDelete.includes(el.id)),
         selectedElementId:
           state.selectedElementId === id ? null : state.selectedElementId,
+        history: {
+          past: [...state.history.past, state.elements],
+          future: [],
+        },
       }
     })
   },
@@ -165,12 +177,22 @@ export const useEditorStore = create<EditorState>((set) => ({
         elements: state.elements.map((el) =>
           el.id === elementId ? { ...el, parentId: newParentId } : el
         ),
+        history: {
+          past: [...state.history.past, state.elements],
+          future: [],
+        },
       }
     })
   },
 
   reorderElements: (elements) => {
-    set({ elements })
+    set((state) => ({
+      elements,
+      history: {
+        past: [...state.history.past, state.elements],
+        future: [],
+      },
+    }))
   },
 
   addAsset: (asset) => {
@@ -207,13 +229,37 @@ export const useEditorStore = create<EditorState>((set) => ({
   },
 
   undo: () => {
-    // TODO: 히스토리 기능 구현
-    console.log('Undo not implemented yet')
+    set((state) => {
+      if (state.history.past.length === 0) return state
+
+      const previous = state.history.past[state.history.past.length - 1]
+      const newPast = state.history.past.slice(0, -1)
+
+      return {
+        elements: previous,
+        history: {
+          past: newPast,
+          future: [state.elements, ...state.history.future],
+        },
+      }
+    })
   },
 
   redo: () => {
-    // TODO: 히스토리 기능 구현
-    console.log('Redo not implemented yet')
+    set((state) => {
+      if (state.history.future.length === 0) return state
+
+      const next = state.history.future[0]
+      const newFuture = state.history.future.slice(1)
+
+      return {
+        elements: next,
+        history: {
+          past: [...state.history.past, state.elements],
+          future: newFuture,
+        },
+      }
+    })
   },
 
   clearAll: () => {
