@@ -1,7 +1,7 @@
-import type { HTMLElement } from '../types/editor'
+import type { AHTMLElement } from '../types/editor'
 
 // 쇼핑몰 상세 페이지 샘플 템플릿 - 프리미엄 무선 이어폰
-export const SAMPLE_TEMPLATE: HTMLElement[] = [
+export const SAMPLE_TEMPLATE: AHTMLElement[] = [
   // 1. 상품명 & 가격 헤더
   {
     id: 'header-product',
@@ -735,12 +735,12 @@ export const SAMPLE_TEMPLATE: HTMLElement[] = [
 
 
 // 부모-자식 관계를 기반으로 children 배열을 채우는 함수
-export function buildElementTree(elements: HTMLElement[]): HTMLElement[] {
+export function buildElementTree(elements: AHTMLElement[]): AHTMLElement[] {
   const elementMap = new Map(elements.map((el) => [el.id, { ...el }]))
 
   // children 배열 초기화
   elementMap.forEach((el) => {
-    el.children = []
+    el.children = [] as AHTMLElement[]
   })
 
   // 부모-자식 관계 구축

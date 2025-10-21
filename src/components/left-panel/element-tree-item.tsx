@@ -1,10 +1,10 @@
 import { ChevronDown, ChevronRight, Minus } from 'lucide-react'
-import type { HTMLElement } from '../../types/editor'
+import type { AHTMLElement } from '../../types/editor'
 
 interface ElementTreeItemProps {
-  element: HTMLElement
+  element: AHTMLElement
   depth: number
-  allElements: HTMLElement[]
+  allElements: AHTMLElement[]
   selectedElementId: string | null
   draggedElementId: string | null
   dragOverElementId: string | null

@@ -1,14 +1,14 @@
 import type {
-  HTMLElement,
-  HTMLDocumentMetadata,
+  AHTMLElement,
+  AHTMLDocumentMetadata,
 } from '../../../types/editor'
 
 export const generateHTML = (
-  elements: HTMLElement[],
-  metadata?: HTMLDocumentMetadata | null
+  elements: AHTMLElement[],
+  metadata?: AHTMLDocumentMetadata | null
 ): string => {
   // 요소를 HTML 문자열로 변환하는 재귀 함수
-  const elementToHTML = (element: HTMLElement, indent: number = 0): string => {
+  const elementToHTML = (element: AHTMLElement, indent: number = 0): string => {
     const indentation = '  '.repeat(indent)
     const children = elements.filter((el) => el.parentId === element.id)
 

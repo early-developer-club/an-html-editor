@@ -1,16 +1,16 @@
 import { Download, Upload } from 'lucide-react'
-import type { HTMLElement, HTMLDocumentMetadata } from '../../types/editor'
+import type { AHTMLElement, AHTMLDocumentMetadata } from '../../types/editor'
 import { SAMPLE_TEMPLATE } from '../../utils/sample-templates'
 import { SAMPLE_HTML } from '../../utils/sample-html'
 import { generateHTML } from './utils/html-generator'
 import { parseHTMLToElements } from './utils/html-parser'
 
 interface TemplateTabProps {
-  elements: HTMLElement[]
-  documentMetadata: HTMLDocumentMetadata | null
+  elements: AHTMLElement[]
+  documentMetadata: AHTMLDocumentMetadata | null
   onLoadTemplate: (
-    elements: HTMLElement[],
-    metadata?: HTMLDocumentMetadata
+    elements: AHTMLElement[],
+    metadata?: AHTMLDocumentMetadata
   ) => void
   onSwitchToLayers: () => void
 }

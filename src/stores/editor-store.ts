@@ -1,18 +1,18 @@
 import { create } from 'zustand'
 import type {
-  HTMLElement,
+  AHTMLElement,
   Asset,
   CanvasState,
   EditorHistory,
-  HTMLDocumentMetadata,
+  AHTMLDocumentMetadata,
 } from '../types/editor'
 
 interface EditorState {
   // 페이지 요소들 (DOM 트리)
-  elements: HTMLElement[]
+  elements: AHTMLElement[]
 
   // HTML 문서 메타데이터 (DOCTYPE, html 속성, head 내용 등)
-  documentMetadata: HTMLDocumentMetadata | null
+  documentMetadata: AHTMLDocumentMetadata | null
 
   // 선택된 요소 ID
   selectedElementId: string | null
@@ -31,12 +31,12 @@ interface EditorState {
 
   // Actions
   // 요소 관련
-  addElement: (element: HTMLElement, parentId?: string) => void
-  updateElement: (id: string, updates: Partial<HTMLElement>) => void
+  addElement: (element: AHTMLElement, parentId?: string) => void
+  updateElement: (id: string, updates: Partial<AHTMLElement>) => void
   deleteElement: (id: string) => void
   selectElement: (id: string | null) => void
   moveElement: (elementId: string, newParentId: string | null) => void
-  reorderElements: (elements: HTMLElement[]) => void
+  reorderElements: (elements: AHTMLElement[]) => void
 
   // 에셋 관련
   addAsset: (asset: Asset) => void
@@ -55,10 +55,10 @@ interface EditorState {
   // 유틸리티
   clearAll: () => void
   loadTemplate: (
-    elements: HTMLElement[],
-    metadata?: HTMLDocumentMetadata
+    elements: AHTMLElement[],
+    metadata?: AHTMLDocumentMetadata
   ) => void
-  setDocumentMetadata: (metadata: HTMLDocumentMetadata) => void
+  setDocumentMetadata: (metadata: AHTMLDocumentMetadata) => void
 }
 
 const INITIAL_CANVAS_STATE: CanvasState = {

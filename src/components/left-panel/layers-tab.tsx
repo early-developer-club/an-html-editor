@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { HTMLElement } from '../../types/editor'
+import type { AHTMLElement } from '../../types/editor'
 import ElementTreeItem from './element-tree-item'
 import {
   createElementByType,
@@ -7,13 +7,13 @@ import {
 } from './utils/element-creator'
 
 interface LayersTabProps {
-  elements: HTMLElement[]
+  elements: AHTMLElement[]
   selectedElementId: string | null
-  onAddElement: (element: HTMLElement, parentId?: string) => void
+  onAddElement: (element: AHTMLElement, parentId?: string) => void
   onSelectElement: (id: string | null) => void
   onDeleteElement: (id: string) => void
   onMoveElement: (elementId: string, newParentId: string | null) => void
-  onReorderElements: (elements: HTMLElement[]) => void
+  onReorderElements: (elements: AHTMLElement[]) => void
 }
 
 function LayersTab({

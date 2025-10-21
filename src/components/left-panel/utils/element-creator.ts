@@ -1,12 +1,12 @@
-import type { HTMLElement, HTMLElementType } from '../../../types/editor'
+import type { AHTMLElement, AHTMLElementType } from '../../../types/editor'
 
 const createElement = (
-  type: HTMLElementType,
+  type: AHTMLElementType,
   tagName: string,
   defaultContent: string,
   defaultStyle: React.CSSProperties = {},
-  additionalProps: Partial<HTMLElement> = {}
-): HTMLElement => {
+  additionalProps: Partial<AHTMLElement> = {}
+): AHTMLElement => {
   return {
     id: `element-${Date.now()}`,
     type,
@@ -21,7 +21,7 @@ const createElement = (
 
 // 사용자가 직접 생성 가능한 요소 타입들만 포함
 export type CreatableElementType = Exclude<
-  HTMLElementType,
+  AHTMLElementType,
   'html' | 'head' | 'meta' | 'title' | 'style' | 'body'
 >
 
@@ -92,7 +92,7 @@ const ELEMENT_CONFIGS: Record<
 export const createElementByType = (
   type: CreatableElementType,
   parentId?: string
-): HTMLElement => {
+): AHTMLElement => {
   const config = ELEMENT_CONFIGS[type]
 
   // img 태그는 특별 처리 (src, alt 속성 추가)

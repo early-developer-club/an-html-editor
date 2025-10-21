@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react'
 
 // HTML 요소 타입 정의
-export type HTMLElementType =
+export type AHTMLElementType =
   | 'div'
   | 'section'
   | 'article'
@@ -33,12 +33,12 @@ export type HTMLElementType =
 
 // 인라인 스타일 속성 (쇼핑몰 플랫폼 호환성을 위해 인라인만 사용)
 // React의 CSSProperties를 사용하여 타입 안정성 확보
-export type ElementStyle = CSSProperties
+export type AHTMLElementStyle = CSSProperties
 
 // 에디터에서 사용하는 HTML 요소 구조
-export interface HTMLElement {
+export interface AHTMLElement {
   id: string
-  type: HTMLElementType
+  type: AHTMLElementType
   tagName: string // 실제 HTML 태그명
   label?: string // 사용자 정의 라벨 (레이어 패널에 표시)
   textContent?: string
@@ -49,13 +49,13 @@ export interface HTMLElement {
   alt?: string // 대체 텍스트 (img 태그)
   // 링크 전용 속성
   href?: string // 링크 URL (a 태그)
-  style: ElementStyle
-  children: HTMLElement[]
+  style: AHTMLElementStyle
+  children: AHTMLElement[]
   parentId: string | null
 }
 
 // HTML 문서의 메타데이터 (DOCTYPE, html 속성, head 내용 등)
-export interface HTMLDocumentMetadata {
+export interface AHTMLDocumentMetadata {
   doctype: string // 예: "html"
   htmlAttributes: Record<string, string> // 예: { lang: "ko" }
   headContent: string // head 태그 내부의 원본 HTML 문자열
@@ -82,6 +82,6 @@ export interface CanvasState {
 
 // 에디터 히스토리 (실행 취소/다시 실행용)
 export interface EditorHistory {
-  past: HTMLElement[][]
-  future: HTMLElement[][]
+  past: AHTMLElement[][]
+  future: AHTMLElement[][]
 }

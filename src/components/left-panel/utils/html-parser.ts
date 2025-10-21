@@ -1,19 +1,19 @@
 import type {
-  HTMLElement,
-  HTMLElementType,
-  HTMLDocumentMetadata,
+  AHTMLElement,
+  AHTMLElementType,
+  AHTMLDocumentMetadata,
 } from '../../../types/editor'
 
 export interface ParseResult {
-  elements: HTMLElement[]
-  metadata: HTMLDocumentMetadata
+  elements: AHTMLElement[]
+  metadata: AHTMLDocumentMetadata
 }
 
 export const parseHTMLToElements = (htmlString: string): ParseResult => {
   const parser = new DOMParser()
   const doc = parser.parseFromString(htmlString, 'text/html')
 
-  const convertedElements: HTMLElement[] = []
+  const convertedElements: AHTMLElement[] = []
   let idCounter = Date.now()
 
   // DOCTYPE 추출
@@ -35,7 +35,7 @@ export const parseHTMLToElements = (htmlString: string): ParseResult => {
     headContent = headElement.innerHTML
   }
 
-  const metadata: HTMLDocumentMetadata = {
+  const metadata: AHTMLDocumentMetadata = {
     doctype,
     htmlAttributes,
     headContent,
@@ -62,11 +62,11 @@ export const parseHTMLToElements = (htmlString: string): ParseResult => {
     return style
   }
 
-  // DOM 노드를 HTMLElement로 변환 (재귀)
+  // DOM 노드를 AHTMLElement로 변환 (재귀)
   const convertNode = (
     node: Node,
     parentId: string | null
-  ): HTMLElement | null => {
+  ): AHTMLElement | null => {
     // 텍스트 노드는 부모에서 처리
     if (node.nodeType === Node.TEXT_NODE) {
       return null
@@ -140,9 +140,9 @@ export const parseHTMLToElements = (htmlString: string): ParseResult => {
       })
     }
 
-    const newElement: HTMLElement = {
+    const newElement: AHTMLElement = {
       id,
-      type: tagName as HTMLElementType,
+      type: tagName as AHTMLElementType,
       tagName: tagName,
       label: label, // name 또는 data-label 속성에서 추출한 label
       textContent: textContent || '',
