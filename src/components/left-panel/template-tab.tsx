@@ -1,17 +1,23 @@
 import { Download, Upload } from 'lucide-react'
-import type { HTMLElement } from '../../types/editor'
+import type { HTMLElement, HTMLDocumentMetadata } from '../../types/editor'
 import { SAMPLE_TEMPLATE } from '../../utils/sample-templates'
+import { SAMPLE_HTML } from '../../utils/sample-html'
 import { generateHTML } from './utils/html-generator'
 import { parseHTMLToElements } from './utils/html-parser'
 
 interface TemplateTabProps {
   elements: HTMLElement[]
-  onLoadTemplate: (elements: HTMLElement[]) => void
+  documentMetadata: HTMLDocumentMetadata | null
+  onLoadTemplate: (
+    elements: HTMLElement[],
+    metadata?: HTMLDocumentMetadata
+  ) => void
   onSwitchToLayers: () => void
 }
 
 function TemplateTab({
   elements,
+  documentMetadata,
   onLoadTemplate,
   onSwitchToLayers,
 }: TemplateTabProps) {
@@ -26,13 +32,32 @@ function TemplateTab({
     onSwitchToLayers()
   }
 
+  const handleLoadSampleHTML = () => {
+    if (
+      elements.length > 0 &&
+      !confirm('현재 작업 중인 내용이 삭제됩니다. 계속하시겠습니까?')
+    ) {
+      return
+    }
+
+    try {
+      const parseResult = parseHTMLToElements(SAMPLE_HTML)
+      onLoadTemplate(parseResult.elements, parseResult.metadata)
+      alert(`${parseResult.elements.length}개의 요소를 불러왔습니다.`)
+      onSwitchToLayers()
+    } catch (error) {
+      console.error('HTML 파싱 에러:', error)
+      alert('HTML 샘플을 파싱하는 중 오류가 발생했습니다.')
+    }
+  }
+
   const handleDownloadHTML = () => {
     if (elements.length === 0) {
       alert('다운로드할 컨텐츠가 없습니다.')
       return
     }
 
-    const html = generateHTML(elements)
+    const html = generateHTML(elements, documentMetadata)
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -62,8 +87,8 @@ function TemplateTab({
         }
 
         try {
-          const parsedElements = parseHTMLToElements(htmlString)
-          if (parsedElements.length === 0) {
+          const parseResult = parseHTMLToElements(htmlString)
+          if (parseResult.elements.length === 0) {
             alert('유효한 HTML 요소를 찾을 수 없습니다.')
             return
           }
@@ -75,8 +100,8 @@ function TemplateTab({
             return
           }
 
-          onLoadTemplate(parsedElements)
-          alert(`${parsedElements.length}개의 요소를 불러왔습니다.`)
+          onLoadTemplate(parseResult.elements, parseResult.metadata)
+          alert(`${parseResult.elements.length}개의 요소를 불러왔습니다.`)
           onSwitchToLayers()
         } catch (error) {
           console.error('HTML 파싱 에러:', error)
@@ -95,7 +120,15 @@ function TemplateTab({
         onClick={handleLoadTemplate}
         className="w-full p-2 mb-2 font-bold text-white border-none rounded cursor-pointer bg-green-600 hover:bg-green-700 text-sm"
       >
-        📄 샘플 템플릿 불러오기
+        📄 샘플 템플릿 불러오기 (객체)
+      </button>
+
+      {/* 샘플 HTML 불러오기 버튼 */}
+      <button
+        onClick={handleLoadSampleHTML}
+        className="w-full p-2 mb-2 font-bold text-white border-none rounded cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-sm"
+      >
+        🌐 샘플 HTML 불러오기 (연필)
       </button>
 
       {/* HTML 업로드 버튼 */}

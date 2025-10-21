@@ -6,6 +6,7 @@ import TemplateTab from './template-tab'
 
 function LeftPanel() {
   const elements = useEditorStore((state) => state.elements)
+  const documentMetadata = useEditorStore((state) => state.documentMetadata)
   const selectedElementId = useEditorStore((state) => state.selectedElementId)
   const addElement = useEditorStore((state) => state.addElement)
   const selectElement = useEditorStore((state) => state.selectElement)
@@ -48,6 +49,7 @@ function LeftPanel() {
         {activeTab === 'template' && (
           <TemplateTab
             elements={elements}
+            documentMetadata={documentMetadata}
             onLoadTemplate={loadTemplate}
             onSwitchToLayers={() => setActiveTab('layers')}
           />
