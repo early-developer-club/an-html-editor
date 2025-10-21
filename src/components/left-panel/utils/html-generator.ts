@@ -68,10 +68,17 @@ export const generateHTML = (
     const openTag = `${indentation}<${element.tagName}${allAttrs ? ' ' + allAttrs : ''}>`
     const closeTag = `${indentation}</${element.tagName}>`
 
+    // innerHTML이 있으면 우선 사용 (<br> 같은 inline HTML 포함)
+    if (element.innerHTML && children.length === 0) {
+      return `${openTag}${element.innerHTML}${closeTag}`
+    }
+
+    // textContent가 있으면 사용
     if (element.textContent && children.length === 0) {
       return `${openTag}${element.textContent}${closeTag}`
     }
 
+    // 자식 요소가 있으면 재귀적으로 렌더링
     if (children.length > 0) {
       const childrenHTML = children
         .map((child) => elementToHTML(child, indent + 1))

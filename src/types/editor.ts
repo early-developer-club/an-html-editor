@@ -41,6 +41,7 @@ export interface HTMLElement {
   type: HTMLElementType
   tagName: string // 실제 HTML 태그명
   textContent?: string
+  innerHTML?: string // <br> 같은 inline HTML을 포함한 내부 HTML (textContent보다 우선)
   attributes?: Record<string, string>
   // 이미지 전용 속성
   src?: string // 이미지 URL (img, video 태그)

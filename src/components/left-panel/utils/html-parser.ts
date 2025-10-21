@@ -105,19 +105,35 @@ export const parseHTMLToElements = (htmlString: string): ParseResult => {
       }
     })
 
-    // 텍스트 컨텐츠 추출 (직접 자식 텍스트만)
+    // 자식 요소가 있는지 확인 (Element 노드만)
+    const hasElementChildren = Array.from(domElement.childNodes).some(
+      (child) => child.nodeType === Node.ELEMENT_NODE
+    )
+
+    // 텍스트 컨텐츠 추출
     let textContent = ''
-    Array.from(domElement.childNodes).forEach((child) => {
-      if (child.nodeType === Node.TEXT_NODE && child.textContent) {
-        textContent += child.textContent.trim()
-      }
-    })
+    let innerHTML = ''
+
+    // 자식 Element가 없고 innerHTML이 있으면 (예: <div>text<br/>more text</div>)
+    if (!hasElementChildren && domElement.innerHTML) {
+      innerHTML = domElement.innerHTML.trim()
+      // textContent도 설정 (fallback용)
+      textContent = domElement.textContent?.trim() || ''
+    } else {
+      // 자식 Element가 있으면 textContent만 추출 (직접 자식 텍스트만)
+      Array.from(domElement.childNodes).forEach((child) => {
+        if (child.nodeType === Node.TEXT_NODE && child.textContent) {
+          textContent += child.textContent.trim()
+        }
+      })
+    }
 
     const newElement: HTMLElement = {
       id,
       type: tagName as HTMLElementType,
       tagName: tagName,
       textContent: textContent || '',
+      innerHTML: innerHTML || undefined,
       attributes: Object.keys(attributes).length > 0 ? attributes : undefined,
       style,
       children: [],
