@@ -17,6 +17,9 @@ interface EditorState {
   // 선택된 요소 ID
   selectedElementId: string | null
 
+  // 메타데이터 선택 여부
+  isMetadataSelected: boolean
+
   // 에셋 리스트
   assets: Asset[]
 
@@ -35,6 +38,7 @@ interface EditorState {
   updateElement: (id: string, updates: Partial<AHTMLElement>) => void
   deleteElement: (id: string) => void
   selectElement: (id: string | null) => void
+  selectMetadata: () => void
   moveElement: (elementId: string, newParentId: string | null) => void
   reorderElements: (elements: AHTMLElement[]) => void
 
@@ -77,6 +81,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   elements: [],
   documentMetadata: null,
   selectedElementId: null,
+  isMetadataSelected: false,
   assets: [],
   canvas: INITIAL_CANVAS_STATE,
   canvasTheme: 'light',
@@ -126,7 +131,11 @@ export const useEditorStore = create<EditorState>((set) => ({
   },
 
   selectElement: (id) => {
-    set({ selectedElementId: id })
+    set({ selectedElementId: id, isMetadataSelected: false })
+  },
+
+  selectMetadata: () => {
+    set({ isMetadataSelected: true, selectedElementId: null })
   },
 
   moveElement: (elementId, newParentId) => {
