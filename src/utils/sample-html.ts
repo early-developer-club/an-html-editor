@@ -60,15 +60,17 @@ export const SAMPLE_HTML = `
       </div>
     </div>
     <img
+      name="메인 상품 이미지"
       src="https://tqbgeliijjkochgznpba.supabase.co/storage/v1/object/public/images/6ece3912-cdd4-4111-8701-08907a54198c/87dc80f0-b57b-430f-8082-a4d5aaca74dc.webp"
       alt="상품 이미지"
       style="width: 860px; margin: 0 auto 40px; aspect-ratio: 860/350; object-fit: cover; display: block"
     />
 
     <!-- Usage Tip Section -->
-    <div style="width: 860px; margin: 0 auto; background: var(--white); padding: 40px 60px; box-sizing: border-box">
-      <div style="text-align: center; margin-bottom: 60px">
+    <div name="활용법 섹션" style="width: 860px; margin: 0 auto; background: var(--white); padding: 40px 60px; box-sizing: border-box">
+      <div name="활용법 타이틀" style="text-align: center; margin-bottom: 60px">
         <div
+          name="활용법 배지"
           style="
             background: #202020;
             font-family: Pretendard;
@@ -83,24 +85,27 @@ export const SAMPLE_HTML = `
         >
           카펜터 연필 200% 활용법!
         </div>
-        <div style="font-family: Pretendard; font-weight: 600; font-size: 16px; color: var(--black)">
+        <div name="활용법 설명" style="font-family: Pretendard; font-weight: 600; font-size: 16px; color: var(--black)">
           작업 현장은 물론, 일상의 메모까지.<br />어디서든 당신의 아이디어를 선명하게 기록하세요.
         </div>
       </div>
 
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 14px">
+      <div name="갤러리 컨테이너" style="display: flex; flex-direction: column; align-items: center; gap: 14px">
         <img
+          name="갤러리 메인 이미지"
           src="https://tqbgeliijjkochgznpba.supabase.co/storage/v1/object/public/images/6ece3912-cdd4-4111-8701-08907a54198c/f22de574-a995-4168-9410-6c7c91f34b86.webp"
           alt="갤러리 이미지 1"
           style="width: 740px; height: 380px; object-fit: cover"
         />
-        <div style="display: flex; gap: 14px; width: 740px">
+        <div name="갤러리 서브 이미지 그룹" style="display: flex; gap: 14px; width: 740px">
           <img
+            name="갤러리 서브 이미지 1"
             src="https://tqbgeliijjkochgznpba.supabase.co/storage/v1/object/public/images/6ece3912-cdd4-4111-8701-08907a54198c/5f467e46-28cf-439c-8c92-9a2cf2e5cd48.webp"
             alt="갤러리 이미지 2"
             style="width: 426px; height: 300px; object-fit: cover"
           />
           <img
+            name="갤러리 서브 이미지 2"
             src="https://tqbgeliijjkochgznpba.supabase.co/storage/v1/object/public/images/6ece3912-cdd4-4111-8701-08907a54198c/f6f1a9de-2532-438b-9c1c-8151206e5f68.webp"
             alt="갤러리 이미지 3"
             style="width: 300px; height: 300px; object-fit: cover"
@@ -110,11 +115,12 @@ export const SAMPLE_HTML = `
     </div>
 
     <!-- Points Section -->
-    <div style="width: 860px; margin: 0 auto; background: var(--white); font-family: Pretendard">
+    <div name="포인트 섹션" style="width: 860px; margin: 0 auto; background: var(--white); font-family: Pretendard">
       <div style="height: 2px; background: var(--gray-color-300); margin-bottom: 50px"></div>
 
       <!-- Point 1 -->
       <div
+        name="포인트 1 컨테이너"
         style="
           display: flex;
           align-items: center;
@@ -124,7 +130,7 @@ export const SAMPLE_HTML = `
           padding: 0 110px;
         "
       >
-        <div style="display: flex; flex-direction: column; gap: 20px; width: 100%">
+        <div name="포인트 1 텍스트" style="display: flex; flex-direction: column; gap: 20px; width: 100%">
           <div style="display: flex; gap: 4px; align-items: center">
             <span style="font-weight: 600; font-size: 16px; color: var(--black)">Point</span>
             <div
@@ -152,6 +158,7 @@ export const SAMPLE_HTML = `
           </div>
         </div>
         <img
+          name="포인트 1 이미지"
           src="https://tqbgeliijjkochgznpba.supabase.co/storage/v1/object/public/images/6ece3912-cdd4-4111-8701-08907a54198c/9d4220ef-b8ae-4d9b-bacf-7b23ec9a8f73.webp"
           alt="포인트 1 이미지"
           style="width: 189px; height: 189px; object-fit: contain; flex-shrink: 0"
@@ -162,6 +169,7 @@ export const SAMPLE_HTML = `
 
       <!-- Point 2 -->
       <div
+        name="포인트 2 컨테이너"
         style="
           display: flex;
           align-items: center;
@@ -171,7 +179,7 @@ export const SAMPLE_HTML = `
           padding: 0 110px;
         "
       >
-        <div style="display: flex; flex-direction: column; gap: 20px; width: 100%">
+        <div name="포인트 2 텍스트" style="display: flex; flex-direction: column; gap: 20px; width: 100%">
           <div style="display: flex; gap: 4px; align-items: center">
             <span style="font-weight: 600; font-size: 16px; color: var(--black)">Point</span>
             <div
@@ -199,6 +207,7 @@ export const SAMPLE_HTML = `
           </div>
         </div>
         <img
+          name="포인트 2 이미지"
           src="https://tqbgeliijjkochgznpba.supabase.co/storage/v1/object/public/images/6ece3912-cdd4-4111-8701-08907a54198c/5b98af44-1e65-4f1c-8a98-b6ffaa929b00.webp"
           alt="포인트 2 이미지"
           style="width: 189px; height: 189px; object-fit: cover; flex-shrink: 0"
@@ -209,6 +218,7 @@ export const SAMPLE_HTML = `
 
       <!-- Point 3 -->
       <div
+        name="포인트 3 컨테이너"
         style="
           display: flex;
           align-items: center;
@@ -218,7 +228,7 @@ export const SAMPLE_HTML = `
           padding: 0 110px;
         "
       >
-        <div style="display: flex; flex-direction: column; gap: 20px; width: 100%">
+        <div name="포인트 3 텍스트" style="display: flex; flex-direction: column; gap: 20px; width: 100%">
           <div style="display: flex; gap: 4px; align-items: center">
             <span style="font-weight: 600; font-size: 16px; color: var(--black)">Point</span>
             <div
@@ -246,6 +256,7 @@ export const SAMPLE_HTML = `
           </div>
         </div>
         <img
+          name="포인트 3 이미지"
           src="https://tqbgeliijjkochgznpba.supabase.co/storage/v1/object/public/images/6ece3912-cdd4-4111-8701-08907a54198c/69d24887-2426-443c-baa5-7e108b8f797d.webp"
           alt="포인트 3 이미지"
           style="width: 189px; height: 189px; object-fit: cover; flex-shrink: 0"
@@ -257,6 +268,7 @@ export const SAMPLE_HTML = `
 
     <!-- Point 4 Section -->
     <div
+      name="포인트 4 섹션"
       style="
         width: 860px;
         margin: 0 auto;
@@ -297,12 +309,13 @@ export const SAMPLE_HTML = `
       </div>
 
       <img
+        name="포인트 4 이미지"
         src="https://tqbgeliijjkochgznpba.supabase.co/storage/v1/object/public/images/6ece3912-cdd4-4111-8701-08907a54198c/dab094e1-283a-4352-a3c0-0d82c6cca77f.webp"
         alt="포인트 4 이미지"
         style="width: 688px; object-fit: cover"
       />
 
-      <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start">
+      <div name="컬러 옵션 설명" style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start">
         <div style="font-weight: bold; font-size: 20px; color: var(--black)">8가지 바디 컬러</div>
         <div style="font-weight: 500; font-size: 16px; color: var(--black)">
           화이트, 우드, 그린, 옐로우, 오렌지, 레드, 블루, 블랙
@@ -312,6 +325,7 @@ export const SAMPLE_HTML = `
 
     <!-- Product Size & Operation Area Section -->
     <div
+      name="제품 사이즈 섹션"
       style="
         width: 860px;
         margin: 0 auto;
@@ -351,12 +365,14 @@ export const SAMPLE_HTML = `
       </div>
 
       <img
+        name="사이즈 가이드 이미지"
         src="https://tqbgeliijjkochgznpba.supabase.co/storage/v1/object/public/images/6ece3912-cdd4-4111-8701-08907a54198c/c4a21fe1-91c8-48c0-937d-b7826b5f69cf.webp"
         alt="사이즈 가이드"
         style="width: 688px; object-fit: cover"
       />
 
       <div
+        name="사이즈 테이블"
         style="
           display: flex;
           flex-direction: column;
@@ -436,8 +452,8 @@ export const SAMPLE_HTML = `
     </div>
 
     <!-- Usage Precautions Section -->
-    <div style="width: 860px; margin: 0 auto; background: #202020; font-family: Pretendard; padding: 70px 0">
-      <div style="padding: 0 110px; display: flex; flex-direction: column; gap: 16px">
+    <div name="사용 주의사항 섹션" style="width: 860px; margin: 0 auto; background: #202020; font-family: Pretendard; padding: 70px 0">
+      <div name="주의사항 컨테이너" style="padding: 0 110px; display: flex; flex-direction: column; gap: 16px">
         <div style="padding-left: 20px; display: flex; align-items: center">
           <div style="font-weight: bold; font-size: 24px; color: var(--white); flex: 1">사용시 주의사항</div>
         </div>
@@ -525,8 +541,8 @@ export const SAMPLE_HTML = `
     </div>
 
     <!-- Delivery Information Section -->
-    <div style="width: 860px; margin: 0 auto; background: var(--white); font-family: Pretendard; padding: 30px 0">
-      <div style="padding: 0 110px; display: flex; flex-direction: column; gap: 28px">
+    <div name="배송 안내 섹션" style="width: 860px; margin: 0 auto; background: var(--white); font-family: Pretendard; padding: 30px 0">
+      <div name="배송 안내 컨테이너" style="padding: 0 110px; display: flex; flex-direction: column; gap: 28px">
         <div style="padding-left: 20px; display: flex; align-items: center">
           <div style="font-weight: bold; font-size: 20px; color: var(--black); flex: 1">배송안내</div>
         </div>
