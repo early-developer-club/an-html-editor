@@ -40,6 +40,7 @@ export interface HTMLElement {
   id: string
   type: HTMLElementType
   tagName: string // 실제 HTML 태그명
+  label?: string // 사용자 정의 라벨 (레이어 패널에 표시)
   textContent?: string
   innerHTML?: string // <br> 같은 inline HTML을 포함한 내부 HTML (textContent보다 우선)
   attributes?: Record<string, string>

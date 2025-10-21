@@ -62,8 +62,22 @@ function RightPanel() {
               <h3 className="mb-2 text-sm">
                 {selectedElement.tagName}
               </h3>
-              <p className="text-xs text-text-muted">
+              <p className="text-xs text-text-muted mb-3">
                 ID: {selectedElement.id}
+              </p>
+
+              <label className="block mb-1 text-xs text-text-muted">
+                레이어 이름 (선택사항)
+              </label>
+              <input
+                type="text"
+                value={selectedElement.label || ''}
+                onChange={(e) => handleAttributeChange('label', e.target.value)}
+                className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
+                placeholder={`예: 상단 헤더, 제품 설명, 가격 정보...`}
+              />
+              <p className="mt-1 text-[10px] text-text-muted">
+                💡 왼쪽 레이어 패널에 표시될 이름입니다
               </p>
             </div>
 

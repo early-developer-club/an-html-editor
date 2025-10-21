@@ -98,10 +98,17 @@ export const parseHTMLToElements = (htmlString: string): ParseResult => {
 
     // 모든 HTML 속성 추출
     const attributes: Record<string, string> = {}
+    let label: string | undefined = undefined
+
     Array.from(domElement.attributes).forEach((attr) => {
       // style 속성은 별도로 처리하므로 제외
       if (attr.name !== 'style') {
-        attributes[attr.name] = attr.value
+        // data-label 또는 name 속성을 label로 추출
+        if (attr.name === 'data-label' || attr.name === 'name') {
+          label = attr.value
+        } else {
+          attributes[attr.name] = attr.value
+        }
       }
     })
 
@@ -137,6 +144,7 @@ export const parseHTMLToElements = (htmlString: string): ParseResult => {
       id,
       type: tagName as HTMLElementType,
       tagName: tagName,
+      label: label, // name 또는 data-label 속성에서 추출한 label
       textContent: textContent || '',
       innerHTML: innerHTML || undefined,
       attributes: Object.keys(attributes).length > 0 ? attributes : undefined,

@@ -1,4 +1,3 @@
-
 export const SAMPLE_HTML = `
 <!DOCTYPE html>
 <html lang="ko">
@@ -32,9 +31,9 @@ export const SAMPLE_HTML = `
 
   <body style="width: 860px; margin: 0 auto; padding: 0; background: #ffffff">
     <!-- Hero Section -->
-    <div style="width: 860px; margin: 0 auto; background: var(--white); padding: 80px 60px; box-sizing: border-box">
-      <div style="font-family: Pretendard; font-weight: bold; font-size: 40px; color: var(--black)">카펜터 연필</div>
-      <div style="font-family: Pretendard; font-weight: 600; font-size: 20px; color: var(--black); margin-top: 8px">
+    <div name="상단헤더" style="width: 860px; margin: 0 auto; background: var(--white); padding: 80px 60px; box-sizing: border-box">
+      <div name="상품명" style="font-family: Pretendard; font-weight: bold; font-size: 40px; color: var(--black)">카펜터 연필</div>
+      <div name="상품 영문명" style="font-family: Pretendard; font-weight: 600; font-size: 20px; color: var(--black); margin-top: 8px">
         Carpenter Pencil
       </div>
       <div style="height: 2px; background: var(--gray-color-300); margin: 16px 0"></div>
@@ -559,4 +558,4 @@ export const SAMPLE_HTML = `
     </div>
   </body>
 </html>
-`;
+`

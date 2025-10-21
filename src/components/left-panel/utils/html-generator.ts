@@ -24,10 +24,17 @@ export const generateHTML = (
       : ''
 
     // 일반 속성들을 HTML 속성 문자열로 변환
-    const attributes = {
+    const attributes: Record<string, string> = {
       ...element.attributes,
       'data-element-id': element.id, // 에디터에서 요소 선택을 위해 추가
     }
+
+    // label이 있으면 name과 data-label 속성으로 추가
+    if (element.label) {
+      attributes['name'] = element.label
+      attributes['data-label'] = element.label
+    }
+
     const attributesString = Object.entries(attributes)
       .map(([key, value]) => `${key}="${value}"`)
       .join(' ')

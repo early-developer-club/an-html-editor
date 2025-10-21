@@ -94,7 +94,18 @@ function ElementTreeItem({
               <Minus size={16} />
             </div>
           )}
-          <span>{element.tagName}</span>
+          <span className="flex items-center gap-1.5">
+            {element.label ? (
+              <>
+                <span className="font-semibold">{element.label}</span>
+                <span className="text-[10px] text-text-muted opacity-70">
+                  ({element.tagName})
+                </span>
+              </>
+            ) : (
+              <span>{element.tagName}</span>
+            )}
+          </span>
         </div>
         <button
           onClick={(e) => {
