@@ -1,4 +1,4 @@
-import type { AHTMLElement, AHTMLElementType } from '../../../types/editor'
+import { AHTMLElement, AHTMLElementType } from '@/types/html-editor.types'
 
 const createElement = (
   type: AHTMLElementType,

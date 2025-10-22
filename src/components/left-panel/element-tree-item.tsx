@@ -1,6 +1,6 @@
+import type { AHTMLElement } from '@/types/html-editor.types'
 import { ChevronDown, ChevronRight, Minus, Trash2 } from 'lucide-react'
 import { useEffect, useRef } from 'react'
-import type { AHTMLElement } from '../../types/editor'
 
 interface ElementTreeItemProps {
   element: AHTMLElement

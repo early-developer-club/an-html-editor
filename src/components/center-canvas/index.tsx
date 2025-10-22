@@ -1,59 +1,61 @@
-import { useRef, useState } from 'react'
-import { useEditorStore } from '../../stores/editor-store'
-import CanvasIframe from './canvas-iframe'
-import ElementActionButtons from './element-action-buttons'
-import EmptyState from './empty-state'
-import HistoryButtons from './history-buttons'
-import { useDeleteButtonPosition } from './hooks/use-delete-button-position'
-import { useKeyboardShortcuts } from './hooks/use-keyboard-shortcuts'
-import { useTextEditTrigger } from './hooks/use-text-edit-trigger'
+"use client";
+
+import { useEditorStore } from "@/components/html-editor/html-editor.store";
+import { useRef, useState } from "react";
+import CanvasIframe from "./canvas-iframe";
+import ElementActionButtons from "./element-action-buttons";
+import EmptyState from "./empty-state";
+import HistoryButtons from "./history-buttons";
+import { useButtonPosition } from "./hooks/use-button-position";
+import { useKeyboardShortcuts } from "./hooks/use-keyboard-shortcuts";
+import { useTextEditTrigger } from "./hooks/use-text-edit-trigger";
 
 function CenterCanvas() {
-  const elements = useEditorStore((state) => state.elements)
-  const documentMetadata = useEditorStore((state) => state.documentMetadata)
-  const selectedElementId = useEditorStore((state) => state.selectedElementId)
-  const selectElement = useEditorStore((state) => state.selectElement)
-  const updateElement = useEditorStore((state) => state.updateElement)
-  const deleteElement = useEditorStore((state) => state.deleteElement)
-  const undo = useEditorStore((state) => state.undo)
-  const redo = useEditorStore((state) => state.redo)
-  const history = useEditorStore((state) => state.history)
+  const elements = useEditorStore((state) => state.elements);
+  const documentMetadata = useEditorStore((state) => state.documentMetadata);
+  const selectedElementId = useEditorStore((state) => state.selectedElementId);
+  const selectElement = useEditorStore((state) => state.selectElement);
+  const updateElement = useEditorStore((state) => state.updateElement);
+  const deleteElement = useEditorStore((state) => state.deleteElement);
+  const undo = useEditorStore((state) => state.undo);
+  const redo = useEditorStore((state) => state.redo);
+  const history = useEditorStore((state) => state.history);
 
-  const iframeRef = useRef<HTMLIFrameElement>(null)
-  const [editingElementId, setEditingElementId] = useState<string | null>(null)
-  const [editTrigger, setEditTrigger] = useState<string | null>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [editingElementId, setEditingElementId] = useState<string | null>(null);
+  const [editTrigger, setEditTrigger] = useState<string | null>(null);
 
   // 삭제 버튼 위치
-  const deleteButtonPos = useDeleteButtonPosition({
+  const deleteButtonPos = useButtonPosition({
     iframeRef,
     selectedElementId,
-  })
+  });
 
   // 키보드 단축키
-  useKeyboardShortcuts({ onUndo: undo, onRedo: redo })
+  useKeyboardShortcuts({ onUndo: undo, onRedo: redo });
 
   // 텍스트 편집 트리거
   useTextEditTrigger({
     iframeRef,
     elementId: editTrigger,
     onSetEditingElementId: setEditingElementId,
-  })
+  });
 
   // 편집 버튼 클릭 핸들러
   const handleEdit = () => {
     if (selectedElementId) {
-      setEditTrigger(selectedElementId)
+      setEditTrigger(selectedElementId);
       // 트리거 후 리셋 (재트리거 가능하도록)
-      setTimeout(() => setEditTrigger(null), 300)
+      setTimeout(() => setEditTrigger(null), 300);
     }
-  }
+  };
 
   // 이미지 URL 업데이트 핸들러
   const handleUpdateImage = (newSrc: string) => {
     if (selectedElementId) {
-      updateElement(selectedElementId, { src: newSrc })
+      updateElement(selectedElementId, { src: newSrc });
     }
-  }
+  };
 
   return (
     <div className="relative flex flex-col overflow-hidden bg-canvas-bg">
@@ -95,7 +97,7 @@ function CenterCanvas() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default CenterCanvas
+export default CenterCanvas;

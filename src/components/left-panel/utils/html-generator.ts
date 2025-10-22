@@ -1,7 +1,7 @@
 import type {
-  AHTMLElement,
   AHTMLDocumentMetadata,
-} from '../../../types/editor'
+  AHTMLElement,
+} from '@/types/html-editor.types'
 
 export const generateHTML = (
   elements: AHTMLElement[],
@@ -69,7 +69,10 @@ export const generateHTML = (
     }
 
     // 일반 태그 처리
-    const allAttrs = [attributesString, styleString ? `style="${styleString}"` : '']
+    const allAttrs = [
+      attributesString,
+      styleString ? `style="${styleString}"` : '',
+    ]
       .filter(Boolean)
       .join(' ')
     const openTag = `${indentation}<${element.tagName}${allAttrs ? ' ' + allAttrs : ''}>`
@@ -98,9 +101,7 @@ export const generateHTML = (
 
   // 최상위 요소들 (parentId가 null인 요소)
   const rootElements = elements.filter((el) => el.parentId === null)
-  const bodyContent = rootElements
-    .map((el) => elementToHTML(el, 2))
-    .join('\n')
+  const bodyContent = rootElements.map((el) => elementToHTML(el, 2)).join('\n')
 
   // 메타데이터가 있으면 원본 그대로 사용, 없으면 기본값 사용
   if (metadata) {

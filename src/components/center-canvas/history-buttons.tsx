@@ -1,18 +1,15 @@
-import { Redo, Undo } from 'lucide-react'
+"use client";
+
+import { Redo, Undo } from "lucide-react";
 
 interface HistoryButtonsProps {
-  canUndo: boolean
-  canRedo: boolean
-  onUndo: () => void
-  onRedo: () => void
+  canUndo: boolean;
+  canRedo: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
 }
 
-function HistoryButtons({
-  canUndo,
-  canRedo,
-  onUndo,
-  onRedo,
-}: HistoryButtonsProps) {
+function HistoryButtons({ canUndo, canRedo, onUndo, onRedo }: HistoryButtonsProps) {
   return (
     <div className="absolute top-4 left-4 z-10 flex gap-1.5">
       <button
@@ -32,7 +29,7 @@ function HistoryButtons({
         <Redo size={14} />
       </button>
     </div>
-  )
+  );
 }
 
-export default HistoryButtons
+export default HistoryButtons;
