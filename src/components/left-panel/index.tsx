@@ -1,6 +1,7 @@
+'use client'
+
+import { useEditorStore } from '@/stores/html-editor.store'
 import { FileCode, Layers } from 'lucide-react'
-import { useState } from 'react'
-import { useEditorStore } from '../../stores/editor-store'
 import LayersTab from './layers-tab'
 import TemplateTab from './template-tab'
 
@@ -16,7 +17,8 @@ function LeftPanel() {
   const loadTemplate = useEditorStore((state) => state.loadTemplate)
   const moveElement = useEditorStore((state) => state.moveElement)
   const reorderElements = useEditorStore((state) => state.reorderElements)
-  const [activeTab, setActiveTab] = useState<'template' | 'layers'>('template')
+  const activeTab = useEditorStore((state) => state.activeTab)
+  const setActiveTab = useEditorStore((state) => state.setActiveTab)
 
   return (
     <div className="flex flex-col overflow-hidden border-r bg-panel-bg border-panel-border">

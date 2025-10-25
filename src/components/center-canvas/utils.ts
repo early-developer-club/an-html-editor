@@ -1,4 +1,4 @@
-import type { AHTMLElement } from '../../types/editor'
+import type { AHTMLElement } from '@/types/html-editor.types'
 
 /**
  * 텍스트 전용 요소인지 확인

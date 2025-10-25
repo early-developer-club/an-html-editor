@@ -1,7 +1,7 @@
 import type {
   AHTMLDocumentMetadata,
   AHTMLElement,
-} from '../../types/editor'
+} from '@/types/html-editor.types'
 import { useIframeContent } from './hooks/use-iframe-content'
 import { useIframeHeight } from './hooks/use-iframe-height'
 
@@ -26,7 +26,6 @@ function CanvasIframe({
   onUpdateElement,
   onSetEditingElementId,
 }: CanvasIframeProps) {
-
   // iframe에 HTML 주입 및 이벤트 설정
   useIframeContent({
     iframeRef,
@@ -40,10 +39,7 @@ function CanvasIframe({
   })
 
   // iframe 높이 자동 조정
-  useIframeHeight({
-    iframeRef,
-    dependencies: [elements, documentMetadata],
-  })
+  useIframeHeight({ iframeRef, elements, documentMetadata })
 
   return (
     <iframe

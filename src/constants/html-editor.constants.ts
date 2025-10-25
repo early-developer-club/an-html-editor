@@ -1,0 +1,1 @@
+export const CLOSE_EDITOR_EVENT = 'CLOSE_EDITOR_EVENT'

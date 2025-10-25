@@ -1,10 +1,12 @@
+'use client'
+
+import { useEditorStore } from '@/stores/html-editor.store'
 import { useRef, useState } from 'react'
-import { useEditorStore } from '../../stores/editor-store'
 import CanvasIframe from './canvas-iframe'
 import ElementActionButtons from './element-action-buttons'
 import EmptyState from './empty-state'
 import HistoryButtons from './history-buttons'
-import { useDeleteButtonPosition } from './hooks/use-delete-button-position'
+import { useButtonPosition } from './hooks/use-button-position'
 import { useKeyboardShortcuts } from './hooks/use-keyboard-shortcuts'
 import { useTextEditTrigger } from './hooks/use-text-edit-trigger'
 
@@ -24,7 +26,7 @@ function CenterCanvas() {
   const [editTrigger, setEditTrigger] = useState<string | null>(null)
 
   // 삭제 버튼 위치
-  const deleteButtonPos = useDeleteButtonPosition({
+  const deleteButtonPos = useButtonPosition({
     iframeRef,
     selectedElementId,
   })

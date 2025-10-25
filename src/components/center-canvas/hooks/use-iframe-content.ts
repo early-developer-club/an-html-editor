@@ -1,9 +1,9 @@
-import { useEffect } from 'react'
+import { generateHTML } from '@/components/left-panel/utils/html-generator'
 import type {
   AHTMLDocumentMetadata,
   AHTMLElement,
-} from '../../../types/editor'
-import { generateHTML } from '../../left-panel/utils/html-generator'
+} from '@/types/html-editor.types'
+import { useEffect } from 'react'
 import { isTextOnlyElement } from '../utils'
 
 interface UseIframeContentProps {
@@ -45,6 +45,36 @@ export function useIframeContent({
     iframeDoc.open()
     iframeDoc.write(htmlContent)
     iframeDoc.close()
+
+    // body가 준비될 때까지 기다리는 함수
+    const waitForBody = (callback: () => void, maxAttempts = 10) => {
+      let attempts = 0
+      const checkBody = () => {
+        if (iframeDoc.body) {
+          callback()
+        } else if (attempts < maxAttempts) {
+          attempts++
+          requestAnimationFrame(checkBody)
+        } else {
+          console.warn('iframe body not ready after', maxAttempts, 'attempts')
+        }
+      }
+      checkBody()
+    }
+
+    // iframe의 모든 리소스(스크립트, 이미지 등) 로드 완료를 기다림
+    const waitForIframeLoad = (callback: () => void) => {
+      const iframeWindow = iframe.contentWindow
+      if (!iframeWindow) return
+
+      if (iframeDoc.readyState === 'complete') {
+        // 이미 로드 완료
+        callback()
+      } else {
+        // load 이벤트 대기
+        iframeWindow.addEventListener('load', callback, { once: true })
+      }
+    }
 
     // 클릭 이벤트 리스너
     const handleClick = (e: MouseEvent) => {
@@ -130,11 +160,6 @@ export function useIframeContent({
       }
     }
 
-    // body에 이벤트 리스너 추가
-    iframeDoc.body.addEventListener('click', handleClick)
-    iframeDoc.body.addEventListener('dblclick', handleDoubleClick)
-    iframeDoc.body.addEventListener('blur', handleBlur, true)
-
     // 모든 요소에 data-element-id와 스타일 추가
     const addElementAttributes = () => {
       elements.forEach((element) => {
@@ -161,13 +186,25 @@ export function useIframeContent({
       })
     }
 
-    // 초기 속성 설정 및 렌더링 후 재설정
-    setTimeout(addElementAttributes, 0)
+    // iframe 로드 완료 후 이벤트 리스너 추가
+    waitForIframeLoad(() => {
+      waitForBody(() => {
+        // body에 이벤트 리스너 추가
+        iframeDoc.body.addEventListener('click', handleClick)
+        iframeDoc.body.addEventListener('dblclick', handleDoubleClick)
+        iframeDoc.body.addEventListener('blur', handleBlur, true)
+
+        // 초기 속성 설정 및 렌더링 후 재설정
+        setTimeout(addElementAttributes, 0)
+      })
+    })
 
     return () => {
-      iframeDoc.body.removeEventListener('click', handleClick)
-      iframeDoc.body.removeEventListener('dblclick', handleDoubleClick)
-      iframeDoc.body.removeEventListener('blur', handleBlur, true)
+      if (iframeDoc.body) {
+        iframeDoc.body.removeEventListener('click', handleClick)
+        iframeDoc.body.removeEventListener('dblclick', handleDoubleClick)
+        iframeDoc.body.removeEventListener('blur', handleBlur, true)
+      }
     }
   }, [
     iframeRef,

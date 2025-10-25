@@ -1,15 +1,17 @@
-import { Trash2 } from 'lucide-react'
+"use client";
+
+import { Trash2 } from "lucide-react";
 
 interface DeleteButtonProps {
-  onDelete: () => void
+  onDelete: () => void;
 }
 
 function DeleteButton({ onDelete }: DeleteButtonProps) {
   const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    onDelete()
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    onDelete();
+  };
 
   return (
     <button
@@ -20,7 +22,7 @@ function DeleteButton({ onDelete }: DeleteButtonProps) {
     >
       <Trash2 size={13} />
     </button>
-  )
+  );
 }
 
-export default DeleteButton
+export default DeleteButton;

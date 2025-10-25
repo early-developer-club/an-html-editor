@@ -1,18 +1,24 @@
-import { useEditorStore } from '../stores/editor-store'
+'use client'
+
+import { generateHTML } from '@/components/left-panel/utils/html-generator'
+import { CLOSE_EDITOR_EVENT } from '@/constants/html-editor.constants'
+import { useEditorStore } from '@/stores/html-editor.store'
+import { useState } from 'react'
+import { toast } from 'react-toastify'
 import SpacingInput from './spacing-input'
-import { Sun, Moon } from 'lucide-react'
 
 function RightPanel() {
   const selectedElementId = useEditorStore((state) => state.selectedElementId)
   const isMetadataSelected = useEditorStore((state) => state.isMetadataSelected)
   const documentMetadata = useEditorStore((state) => state.documentMetadata)
   const elements = useEditorStore((state) => state.elements)
+  const productInfo = useEditorStore((state) => state.productInfo)
   const updateElement = useEditorStore((state) => state.updateElement)
-  const setDocumentMetadata = useEditorStore((state) => state.setDocumentMetadata)
-  const canvasTheme = useEditorStore((state) => state.canvasTheme)
-  const setCanvasTheme = useEditorStore((state) => state.setCanvasTheme)
-
+  const setDocumentMetadata = useEditorStore(
+    (state) => state.setDocumentMetadata
+  )
   const selectedElement = elements.find((el) => el.id === selectedElementId)
+  const [isUpdated, setIsUpdated] = useState(false)
 
   const handleTextContentChange = (value: string) => {
     if (selectedElement) {
@@ -43,12 +49,79 @@ function RightPanel() {
     }
   }
 
-  const handleMetadataChange = (field: 'doctype' | 'htmlAttributes' | 'headContent', value: string | Record<string, string>) => {
+  const handleMetadataChange = (
+    field: 'doctype' | 'htmlAttributes' | 'headContent',
+    value: string | Record<string, string>
+  ) => {
     if (documentMetadata) {
-      setDocumentMetadata({
-        ...documentMetadata,
-        [field]: value,
+      setDocumentMetadata({ ...documentMetadata, [field]: value })
+    }
+  }
+
+  const sendCloseEvent = (refresh: boolean = false) => {
+    window.parent.postMessage(
+      {
+        type: CLOSE_EDITOR_EVENT,
+        payload: {
+          refresh,
+          content:
+            refresh && elements.length
+              ? generateHTML(elements, documentMetadata)
+              : undefined,
+        },
+      },
+      window.location.origin
+    )
+  }
+
+  const handleClose = () => {
+    sendCloseEvent(isUpdated)
+  }
+
+  const handleSave = async (close?: boolean) => {
+    if (!productInfo) {
+      toast.error('저장할 상품 정보가 없습니다.')
+      return
+    }
+
+    if (elements.length === 0) {
+      toast.error('저장할 컨텐츠가 없습니다.')
+      return
+    }
+
+    try {
+      // HTML 생성
+      const htmlContent = generateHTML(elements, documentMetadata)
+
+      // API 호출
+      const response = await fetch('/api/v1/html-editor', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: productInfo.type,
+          seqno: productInfo.seqno,
+          contents: htmlContent,
+        }),
       })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || '저장에 실패했습니다.')
+      }
+
+      toast.success('저장되었습니다.', {
+        onOpen: () => {
+          setTimeout(() => {
+            setIsUpdated(true)
+            if (close) sendCloseEvent(true)
+          }, 1000)
+        },
+      })
+    } catch (error) {
+      console.error('Save error:', error)
+      toast.error(
+        error instanceof Error ? error.message : '저장 중 오류가 발생했습니다.'
+      )
     }
   }
 
@@ -56,15 +129,30 @@ function RightPanel() {
     <div className="flex flex-col overflow-hidden border-l bg-panel-bg border-panel-border">
       <div className="flex items-center justify-between p-3 px-4 font-semibold border-b text-sm bg-panel-header text-text-primary border-panel-border">
         <span>속성</span>
-        <button
-          onClick={() =>
-            setCanvasTheme(canvasTheme === 'dark' ? 'light' : 'dark')
-          }
-          className="p-1.5 border rounded hover:bg-opacity-80 bg-item-hover border-panel-border text-text-primary"
-          title={`${canvasTheme === 'dark' ? '밝은' : '어두운'} 테마로 전환`}
-        >
-          {canvasTheme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-        </button>
+        <div className="flex items-center gap-2">
+          {productInfo?.seqno && (
+            <>
+              <button
+                onClick={handleClose}
+                className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+              >
+                닫기
+              </button>
+              <button
+                onClick={() => handleSave()}
+                className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 border border-blue-600 rounded hover:bg-blue-700 transition-colors"
+              >
+                저장
+              </button>
+              <button
+                onClick={() => handleSave(true)}
+                className="px-3 py-1.5 text-xs font-medium text-white bg-green-600 border border-green-600 rounded hover:bg-green-700 transition-colors"
+              >
+                저장 후 닫기
+              </button>
+            </>
+          )}
+        </div>
       </div>
       <div className="flex-1 p-4 overflow-auto text-text-primary">
         {isMetadataSelected && documentMetadata ? (
@@ -79,11 +167,15 @@ function RightPanel() {
 
             {/* DOCTYPE */}
             <div className="pb-3 mb-3 border-b border-panel-border">
-              <h4 className="mb-2 text-xs text-text-primary font-semibold">DOCTYPE</h4>
+              <h4 className="mb-2 text-xs text-text-primary font-semibold">
+                DOCTYPE
+              </h4>
               <input
                 type="text"
                 value={documentMetadata.doctype}
-                onChange={(e) => handleMetadataChange('doctype', e.target.value)}
+                onChange={(e) =>
+                  handleMetadataChange('doctype', e.target.value)
+                }
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="html"
               />
@@ -91,7 +183,9 @@ function RightPanel() {
 
             {/* HTML Attributes */}
             <div className="pb-3 mb-3 border-b border-panel-border">
-              <h4 className="mb-2 text-xs text-text-primary font-semibold">HTML 속성</h4>
+              <h4 className="mb-2 text-xs text-text-primary font-semibold">
+                HTML 속성
+              </h4>
               <label className="block mb-1 text-xs text-text-muted">
                 언어 (lang)
               </label>
@@ -111,13 +205,17 @@ function RightPanel() {
 
             {/* Head Content */}
             <div>
-              <h4 className="mb-2 text-xs text-text-primary font-semibold">HEAD 내용</h4>
+              <h4 className="mb-2 text-xs text-text-primary font-semibold">
+                HEAD 내용
+              </h4>
               <p className="mb-2 text-[10px] text-text-muted">
                 💡 meta 태그, style 태그, link 태그 등을 포함한 전체 head 내용
               </p>
               <textarea
                 value={documentMetadata.headContent}
-                onChange={(e) => handleMetadataChange('headContent', e.target.value)}
+                onChange={(e) =>
+                  handleMetadataChange('headContent', e.target.value)
+                }
                 className="w-full p-2 text-xs rounded resize-y min-h-[300px] font-mono border bg-input-bg text-text-primary border-input-border"
                 placeholder="<meta charset='UTF-8'>&#10;<style>&#10;  :root {&#10;    --primary-color: #007bff;&#10;  }&#10;</style>"
               />
@@ -130,9 +228,7 @@ function RightPanel() {
           <div>
             {/* 기본 정보 */}
             <div className="pb-3 mb-3 border-b border-panel-border">
-              <h3 className="mb-2 text-sm">
-                {selectedElement.tagName}
-              </h3>
+              <h3 className="mb-2 text-sm">{selectedElement.tagName}</h3>
               <p className="text-xs text-text-muted mb-3">
                 ID: {selectedElement.id}
               </p>
@@ -184,9 +280,7 @@ function RightPanel() {
             {/* 이미지 속성 (img 태그 전용) */}
             {selectedElement.tagName === 'img' && (
               <div className="pb-3 mb-3 border-b border-panel-border">
-                <h4 className="mb-2 text-xs text-text-primary">
-                  이미지 속성
-                </h4>
+                <h4 className="mb-2 text-xs text-text-primary">이미지 속성</h4>
                 <label className="block mt-3 mb-1 text-xs text-text-muted">
                   이미지 URL (src)
                 </label>
@@ -213,16 +307,16 @@ function RightPanel() {
             {/* 링크 속성 (a 태그 전용) */}
             {selectedElement.tagName === 'a' && (
               <div className="pb-3 mb-3 border-b border-panel-border">
-                <h4 className="mb-2 text-xs text-text-primary">
-                  링크 속성
-                </h4>
+                <h4 className="mb-2 text-xs text-text-primary">링크 속성</h4>
                 <label className="block mt-3 mb-1 text-xs text-text-muted">
                   링크 URL (href)
                 </label>
                 <input
                   type="text"
                   value={selectedElement.href || ''}
-                  onChange={(e) => handleAttributeChange('href', e.target.value)}
+                  onChange={(e) =>
+                    handleAttributeChange('href', e.target.value)
+                  }
                   className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                   placeholder="https://example.com"
                 />
@@ -246,9 +340,7 @@ function RightPanel() {
 
             {/* 텍스트 스타일 */}
             <div className="pb-3 mb-3 border-b border-panel-border">
-              <h4 className="mb-2 text-xs text-text-primary">
-                텍스트
-              </h4>
+              <h4 className="mb-2 text-xs text-text-primary">텍스트</h4>
               <label className="block mt-3 mb-1 text-xs text-text-muted">
                 글자 크기 (font-size)
               </label>
@@ -264,7 +356,9 @@ function RightPanel() {
               </label>
               <select
                 value={selectedElement.style?.fontWeight || 'normal'}
-                onChange={(e) => handleStyleChange('fontWeight', e.target.value)}
+                onChange={(e) =>
+                  handleStyleChange('fontWeight', e.target.value)
+                }
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
               >
                 <option value="normal">Normal</option>
@@ -308,7 +402,9 @@ function RightPanel() {
               <input
                 type="text"
                 value={selectedElement.style?.lineHeight || ''}
-                onChange={(e) => handleStyleChange('lineHeight', e.target.value)}
+                onChange={(e) =>
+                  handleStyleChange('lineHeight', e.target.value)
+                }
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="예: 1.6"
               />
@@ -316,9 +412,7 @@ function RightPanel() {
 
             {/* 배경 및 테두리 */}
             <div className="pb-3 mb-3 border-b border-panel-border">
-              <h4 className="mb-2 text-xs text-text-primary">
-                배경 & 테두리
-              </h4>
+              <h4 className="mb-2 text-xs text-text-primary">배경 & 테두리</h4>
               <label className="block mt-3 mb-1 text-xs text-text-muted">
                 배경색 (background-color)
               </label>
@@ -357,9 +451,7 @@ function RightPanel() {
 
             {/* 크기 */}
             <div>
-              <h4 className="mb-2 text-xs text-text-primary">
-                크기
-              </h4>
+              <h4 className="mb-2 text-xs text-text-primary">크기</h4>
               <label className="block mt-3 mb-1 text-xs text-text-muted">
                 너비 (width)
               </label>

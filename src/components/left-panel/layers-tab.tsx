@@ -1,6 +1,8 @@
+'use client'
+
+import type { AHTMLElement } from '@/types/html-editor.types'
 import { FileCode } from 'lucide-react'
 import { useState } from 'react'
-import type { AHTMLElement } from '../../types/editor'
 import ElementTreeItem from './element-tree-item'
 import {
   createElementByType,

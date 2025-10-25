@@ -1,5 +1,9 @@
-import { Image, Paperclip } from 'lucide-react'
+'use client'
+
+import { useEditorStore } from '@/stores/html-editor.store'
+import { Image as ImageIcon, Paperclip } from 'lucide-react'
 import { useRef, useState } from 'react'
+import { toast } from 'react-toastify'
 
 interface ImageEditButtonProps {
   currentSrc: string
@@ -10,6 +14,7 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [newSrc, setNewSrc] = useState(currentSrc)
   const [isUploading, setIsUploading] = useState(false)
+  const productInfo = useEditorStore((state) => state.productInfo)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSave = () => {
@@ -26,6 +31,8 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
 
   // 파일 선택 트리거
   const handleFileSelect = () => {
+    toast.warn('준비중인 기능입니다.')
+    return
     fileInputRef.current?.click()
   }
 
@@ -33,6 +40,11 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+
+    if (!productInfo?.fileKey) {
+      toast.warn('연결된 파일 키가 없습니다.')
+      return
+    }
 
     // 이미지 파일인지 확인
     if (!file.type.startsWith('image/')) {
@@ -48,18 +60,11 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
       formData.append('file', file)
 
       // API 요청
-      const response = await fetch('///', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error('이미지 업로드에 실패했습니다.')
-      }
+      // const result = await fileClient.upload({ file, type: FILE_TYPE.SOURCE, fileKey: productInfo.fileKey });
 
       // 서버에서 반환된 URL 추출
-      const data = await response.json()
-      const imageUrl = data.url || data.imageUrl || data.src
+      // const imageUrl = result.url;
+      const imageUrl = ''
 
       if (!imageUrl) {
         throw new Error('서버에서 이미지 URL을 반환하지 않았습니다.')
@@ -67,9 +72,10 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
 
       // URL 입력창에 설정
       setNewSrc(imageUrl)
+      toast.success('업로드 되었습니다.\n확인을 누르시면 적용됩니다.')
     } catch (error) {
       console.error('Image upload error:', error)
-      alert(
+      toast.error(
         error instanceof Error
           ? error.message
           : '이미지 업로드 중 오류가 발생했습니다.'
@@ -161,7 +167,7 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
       className="p-1 rounded bg-white border border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700 shadow-lg cursor-pointer"
       title="이미지 URL 변경"
     >
-      <Image size={13} />
+      <ImageIcon size={13} />
     </button>
   )
 }

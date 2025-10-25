@@ -1,8 +1,13 @@
+import type {
+  AHTMLDocumentMetadata,
+  AHTMLElement,
+} from '@/types/html-editor.types'
 import { useEffect } from 'react'
 
 interface UseIframeHeightProps {
   iframeRef: React.RefObject<HTMLIFrameElement>
-  dependencies: unknown[]
+  elements: AHTMLElement[]
+  documentMetadata: AHTMLDocumentMetadata | null
 }
 
 /**
@@ -10,23 +15,27 @@ interface UseIframeHeightProps {
  */
 export function useIframeHeight({
   iframeRef,
-  dependencies,
+  elements,
+  documentMetadata,
 }: UseIframeHeightProps) {
   useEffect(() => {
     if (!iframeRef.current) return
 
     const iframe = iframeRef.current
     const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document
+    const iframeWindow = iframe.contentWindow
 
-    if (!iframeDoc) return
+    if (!iframeDoc || !iframeWindow) return
 
     const resizeIframe = () => {
-      if (!iframe.contentWindow) return
+      if (!iframeDoc.body) return
 
       const body = iframeDoc.body
       const html = iframeDoc.documentElement
 
-      // 전체 문서의 높이 계산
+      if (!body || !html) return
+
+      // 전체 문서의 높이 계산 (콘텐츠 실제 높이)
       const height = Math.max(
         body.scrollHeight,
         body.offsetHeight,
@@ -38,37 +47,61 @@ export function useIframeHeight({
       iframe.style.height = `${height}px`
     }
 
-    // 이미지 로드 대기 및 높이 조정
-    const images = Array.from(iframeDoc.querySelectorAll('img'))
-    if (images.length > 0) {
-      let loadedCount = 0
-      images.forEach((img) => {
-        if (img.complete) {
-          loadedCount++
-        } else {
-          img.addEventListener('load', () => {
+    const setupHeightCalculation = () => {
+      if (!iframeDoc.body) return
+
+      // 이미지 로드 대기 및 높이 조정
+      const images = Array.from(iframeDoc.querySelectorAll('img'))
+      if (images.length > 0) {
+        let loadedCount = 0
+        images.forEach((img) => {
+          if (img.complete) {
             loadedCount++
-            if (loadedCount === images.length) {
-              resizeIframe()
-            }
-          })
+          } else {
+            img.addEventListener('load', () => {
+              loadedCount++
+              if (loadedCount === images.length) {
+                resizeIframe()
+              }
+            })
+          }
+        })
+        if (loadedCount === images.length) {
+          setTimeout(resizeIframe, 0)
         }
-      })
-      if (loadedCount === images.length) {
+      } else {
         setTimeout(resizeIframe, 0)
       }
-    } else {
-      setTimeout(resizeIframe, 0)
+
+      // ResizeObserver로 콘텐츠 변경 감지
+      const resizeObserver = new ResizeObserver(() => {
+        resizeIframe()
+      })
+      resizeObserver.observe(iframeDoc.body)
+
+      return () => {
+        resizeObserver.disconnect()
+      }
     }
 
-    // ResizeObserver로 콘텐츠 변경 감지
-    const resizeObserver = new ResizeObserver(() => {
-      resizeIframe()
-    })
-    resizeObserver.observe(iframeDoc.body)
+    // iframe의 모든 리소스(스크립트, 이미지 등) 로드 완료를 기다림
+    let cleanup: (() => void) | undefined
+
+    const handleLoad = () => {
+      cleanup = setupHeightCalculation()
+    }
+
+    if (iframeDoc.readyState === 'complete') {
+      // 이미 로드 완료
+      cleanup = setupHeightCalculation()
+    } else {
+      // load 이벤트 대기
+      iframeWindow.addEventListener('load', handleLoad, { once: true })
+    }
 
     return () => {
-      resizeObserver.disconnect()
+      cleanup?.()
+      iframeWindow.removeEventListener('load', handleLoad)
     }
-  }, dependencies)
+  }, [iframeRef, elements, documentMetadata])
 }

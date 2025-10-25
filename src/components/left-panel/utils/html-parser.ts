@@ -1,8 +1,8 @@
 import type {
+  AHTMLDocumentMetadata,
   AHTMLElement,
   AHTMLElementType,
-  AHTMLDocumentMetadata,
-} from '../../../types/editor'
+} from '@/types/html-editor.types'
 
 export interface ParseResult {
   elements: AHTMLElement[]

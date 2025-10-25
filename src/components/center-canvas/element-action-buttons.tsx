@@ -1,4 +1,6 @@
-import type { AHTMLElement } from '../../types/editor'
+'use client'
+
+import type { AHTMLElement } from '@/types/html-editor.types'
 import DeleteButton from './delete-button'
 import EditButton from './edit-button'
 import ImageEditButton from './image-edit-button'
