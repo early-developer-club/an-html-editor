@@ -33,7 +33,7 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
   const handleFileSelect = () => {
     toast.warn('준비중인 기능입니다.')
     return
-    fileInputRef.current?.click()
+    // fileInputRef.current?.click()
   }
 
   // 파일 업로드 처리
