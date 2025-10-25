@@ -1,19 +1,19 @@
-"use client";
+'use client'
 
-import type { AHTMLElement } from "@/components/html-editor/html-editor.types";
-import DeleteButton from "./delete-button";
-import EditButton from "./edit-button";
-import ImageEditButton from "./image-edit-button";
-import { findElement, isImageElement, isTextOnlyElement } from "./utils";
+import type { AHTMLElement } from '@/types/html-editor.types'
+import DeleteButton from './delete-button'
+import EditButton from './edit-button'
+import ImageEditButton from './image-edit-button'
+import { findElement, isImageElement, isTextOnlyElement } from './utils'
 
 interface ElementActionButtonsProps {
-  elementId: string;
-  elements: AHTMLElement[];
-  position: { top: number; right: number };
-  isEditing: boolean;
-  onDelete: () => void;
-  onEdit: () => void;
-  onUpdateImage: (newSrc: string) => void;
+  elementId: string
+  elements: AHTMLElement[]
+  position: { top: number; right: number }
+  isEditing: boolean
+  onDelete: () => void
+  onEdit: () => void
+  onUpdateImage: (newSrc: string) => void
 }
 
 function ElementActionButtons({
@@ -25,9 +25,9 @@ function ElementActionButtons({
   onEdit,
   onUpdateImage,
 }: ElementActionButtonsProps) {
-  const element = findElement(elementId, elements);
-  const isText = isTextOnlyElement(elementId, elements);
-  const isImage = isImageElement(elementId, elements);
+  const element = findElement(elementId, elements)
+  const isText = isTextOnlyElement(elementId, elements)
+  const isImage = isImageElement(elementId, elements)
   return (
     <div
       className="fixed z-50 flex gap-1"
@@ -40,12 +40,17 @@ function ElementActionButtons({
       {isText && <EditButton isEditing={isEditing} onEdit={onEdit} />}
 
       {/* 이미지 요소: 이미지 URL 변경 버튼 */}
-      {isImage && element && <ImageEditButton currentSrc={element.src || ""} onUpdate={onUpdateImage} />}
+      {isImage && element && (
+        <ImageEditButton
+          currentSrc={element.src || ''}
+          onUpdate={onUpdateImage}
+        />
+      )}
 
       {/* 모든 요소: 삭제 버튼 */}
       <DeleteButton onDelete={onDelete} />
     </div>
-  );
+  )
 }
 
-export default ElementActionButtons;
+export default ElementActionButtons

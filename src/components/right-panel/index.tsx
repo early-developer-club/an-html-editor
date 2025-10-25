@@ -1,60 +1,62 @@
-"use client";
+'use client'
 
-import { generateHTML } from "@/components/html-editor/components/left-panel/utils/html-generator";
-import { CLOSE_EDITOR_EVENT } from "@/components/html-editor/html-editor.constants";
-import { useEditorStore } from "@/components/html-editor/html-editor.store";
-import { useState } from "react";
-import { toast } from "react-toastify";
-import SpacingInput from "./spacing-input";
+import { generateHTML } from '@/components/left-panel/utils/html-generator'
+import { CLOSE_EDITOR_EVENT } from '@/constants/html-editor.constants'
+import { useEditorStore } from '@/stores/html-editor.store'
+import { useState } from 'react'
+import { toast } from 'react-toastify'
+import SpacingInput from './spacing-input'
 
 function RightPanel() {
-  const selectedElementId = useEditorStore((state) => state.selectedElementId);
-  const isMetadataSelected = useEditorStore((state) => state.isMetadataSelected);
-  const documentMetadata = useEditorStore((state) => state.documentMetadata);
-  const elements = useEditorStore((state) => state.elements);
-  const productInfo = useEditorStore((state) => state.productInfo);
-  const updateElement = useEditorStore((state) => state.updateElement);
-  const setDocumentMetadata = useEditorStore((state) => state.setDocumentMetadata);
-  const selectedElement = elements.find((el) => el.id === selectedElementId);
-  const [isUpdated, setIsUpdated] = useState(false);
+  const selectedElementId = useEditorStore((state) => state.selectedElementId)
+  const isMetadataSelected = useEditorStore((state) => state.isMetadataSelected)
+  const documentMetadata = useEditorStore((state) => state.documentMetadata)
+  const elements = useEditorStore((state) => state.elements)
+  const productInfo = useEditorStore((state) => state.productInfo)
+  const updateElement = useEditorStore((state) => state.updateElement)
+  const setDocumentMetadata = useEditorStore(
+    (state) => state.setDocumentMetadata
+  )
+  const selectedElement = elements.find((el) => el.id === selectedElementId)
+  const [isUpdated, setIsUpdated] = useState(false)
 
   const handleTextContentChange = (value: string) => {
     if (selectedElement) {
       // innerHTML이 있었던 경우, \n을 <br />로 변환
       if (selectedElement.innerHTML !== undefined) {
-        const htmlValue = value.replace(/\n/g, "<br />");
+        const htmlValue = value.replace(/\n/g, '<br />')
         updateElement(selectedElement.id, {
-          textContent: value.replace(/\n/g, " "), // 줄바꿈을 공백으로
+          textContent: value.replace(/\n/g, ' '), // 줄바꿈을 공백으로
           innerHTML: htmlValue, // \n → <br />
-        });
+        })
       } else {
-        updateElement(selectedElement.id, { textContent: value });
+        updateElement(selectedElement.id, { textContent: value })
       }
     }
-  };
+  }
 
   const handleStyleChange = (property: string, value: string | number) => {
     if (selectedElement) {
       updateElement(selectedElement.id, {
         style: { ...selectedElement.style, [property]: value },
-      });
+      })
     }
-  };
+  }
 
   const handleAttributeChange = (attribute: string, value: string) => {
     if (selectedElement) {
-      updateElement(selectedElement.id, { [attribute]: value });
+      updateElement(selectedElement.id, { [attribute]: value })
     }
-  };
+  }
 
   const handleMetadataChange = (
-    field: "doctype" | "htmlAttributes" | "headContent",
+    field: 'doctype' | 'htmlAttributes' | 'headContent',
     value: string | Record<string, string>
   ) => {
     if (documentMetadata) {
-      setDocumentMetadata({ ...documentMetadata, [field]: value });
+      setDocumentMetadata({ ...documentMetadata, [field]: value })
     }
-  };
+  }
 
   const sendCloseEvent = (refresh: boolean = false) => {
     window.parent.postMessage(
@@ -62,57 +64,66 @@ function RightPanel() {
         type: CLOSE_EDITOR_EVENT,
         payload: {
           refresh,
-          content: refresh && elements.length ? generateHTML(elements, documentMetadata) : undefined,
+          content:
+            refresh && elements.length
+              ? generateHTML(elements, documentMetadata)
+              : undefined,
         },
       },
       window.location.origin
-    );
-  };
+    )
+  }
 
   const handleClose = () => {
-    sendCloseEvent(isUpdated);
-  };
+    sendCloseEvent(isUpdated)
+  }
 
   const handleSave = async (close?: boolean) => {
     if (!productInfo) {
-      toast.error("저장할 상품 정보가 없습니다.");
-      return;
+      toast.error('저장할 상품 정보가 없습니다.')
+      return
     }
 
     if (elements.length === 0) {
-      toast.error("저장할 컨텐츠가 없습니다.");
-      return;
+      toast.error('저장할 컨텐츠가 없습니다.')
+      return
     }
 
     try {
       // HTML 생성
-      const htmlContent = generateHTML(elements, documentMetadata);
+      const htmlContent = generateHTML(elements, documentMetadata)
 
       // API 호출
-      const response = await fetch("/api/v1/html-editor", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: productInfo.type, seqno: productInfo.seqno, contents: htmlContent }),
-      });
+      const response = await fetch('/api/v1/html-editor', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: productInfo.type,
+          seqno: productInfo.seqno,
+          contents: htmlContent,
+        }),
+      })
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "저장에 실패했습니다.");
+        const error = await response.json()
+        throw new Error(error.error || '저장에 실패했습니다.')
       }
 
-      toast.success("저장되었습니다.", {
+      toast.success('저장되었습니다.', {
         onOpen: () => {
           setTimeout(() => {
-            setIsUpdated(true);
-            if (close) sendCloseEvent(true);
-          }, 1000);
+            setIsUpdated(true)
+            if (close) sendCloseEvent(true)
+          }, 1000)
         },
-      });
+      })
     } catch (error) {
-      console.error("Save error:", error);
-      toast.error(error instanceof Error ? error.message : "저장 중 오류가 발생했습니다.");
+      console.error('Save error:', error)
+      toast.error(
+        error instanceof Error ? error.message : '저장 중 오류가 발생했습니다.'
+      )
     }
-  };
+  }
 
   return (
     <div className="flex flex-col overflow-hidden border-l bg-panel-bg border-panel-border">
@@ -149,16 +160,22 @@ function RightPanel() {
             {/* 메타데이터 편집 */}
             <div className="pb-3 mb-3 border-b border-panel-border">
               <h3 className="mb-2 text-sm font-semibold">문서 메타데이터</h3>
-              <p className="text-xs text-text-muted mb-3">HTML 문서의 head 내용을 편집합니다</p>
+              <p className="text-xs text-text-muted mb-3">
+                HTML 문서의 head 내용을 편집합니다
+              </p>
             </div>
 
             {/* DOCTYPE */}
             <div className="pb-3 mb-3 border-b border-panel-border">
-              <h4 className="mb-2 text-xs text-text-primary font-semibold">DOCTYPE</h4>
+              <h4 className="mb-2 text-xs text-text-primary font-semibold">
+                DOCTYPE
+              </h4>
               <input
                 type="text"
                 value={documentMetadata.doctype}
-                onChange={(e) => handleMetadataChange("doctype", e.target.value)}
+                onChange={(e) =>
+                  handleMetadataChange('doctype', e.target.value)
+                }
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="html"
               />
@@ -166,13 +183,17 @@ function RightPanel() {
 
             {/* HTML Attributes */}
             <div className="pb-3 mb-3 border-b border-panel-border">
-              <h4 className="mb-2 text-xs text-text-primary font-semibold">HTML 속성</h4>
-              <label className="block mb-1 text-xs text-text-muted">언어 (lang)</label>
+              <h4 className="mb-2 text-xs text-text-primary font-semibold">
+                HTML 속성
+              </h4>
+              <label className="block mb-1 text-xs text-text-muted">
+                언어 (lang)
+              </label>
               <input
                 type="text"
-                value={documentMetadata.htmlAttributes.lang || ""}
+                value={documentMetadata.htmlAttributes.lang || ''}
                 onChange={(e) =>
-                  handleMetadataChange("htmlAttributes", {
+                  handleMetadataChange('htmlAttributes', {
                     ...documentMetadata.htmlAttributes,
                     lang: e.target.value,
                   })
@@ -184,17 +205,23 @@ function RightPanel() {
 
             {/* Head Content */}
             <div>
-              <h4 className="mb-2 text-xs text-text-primary font-semibold">HEAD 내용</h4>
+              <h4 className="mb-2 text-xs text-text-primary font-semibold">
+                HEAD 내용
+              </h4>
               <p className="mb-2 text-[10px] text-text-muted">
                 💡 meta 태그, style 태그, link 태그 등을 포함한 전체 head 내용
               </p>
               <textarea
                 value={documentMetadata.headContent}
-                onChange={(e) => handleMetadataChange("headContent", e.target.value)}
+                onChange={(e) =>
+                  handleMetadataChange('headContent', e.target.value)
+                }
                 className="w-full p-2 text-xs rounded resize-y min-h-[300px] font-mono border bg-input-bg text-text-primary border-input-border"
                 placeholder="<meta charset='UTF-8'>&#10;<style>&#10;  :root {&#10;    --primary-color: #007bff;&#10;  }&#10;</style>"
               />
-              <p className="mt-1 text-[10px] text-text-muted">⚠️ :root 변수나 @import 글꼴을 직접 수정할 수 있습니다</p>
+              <p className="mt-1 text-[10px] text-text-muted">
+                ⚠️ :root 변수나 @import 글꼴을 직접 수정할 수 있습니다
+              </p>
             </div>
           </div>
         ) : selectedElement ? (
@@ -202,61 +229,75 @@ function RightPanel() {
             {/* 기본 정보 */}
             <div className="pb-3 mb-3 border-b border-panel-border">
               <h3 className="mb-2 text-sm">{selectedElement.tagName}</h3>
-              <p className="text-xs text-text-muted mb-3">ID: {selectedElement.id}</p>
+              <p className="text-xs text-text-muted mb-3">
+                ID: {selectedElement.id}
+              </p>
 
-              <label className="block mb-1 text-xs text-text-muted">레이어 이름 (선택사항)</label>
+              <label className="block mb-1 text-xs text-text-muted">
+                레이어 이름 (선택사항)
+              </label>
               <input
                 type="text"
-                value={selectedElement.label || ""}
-                onChange={(e) => handleAttributeChange("label", e.target.value)}
+                value={selectedElement.label || ''}
+                onChange={(e) => handleAttributeChange('label', e.target.value)}
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder={`예: 상단 헤더, 제품 설명, 가격 정보...`}
               />
-              <p className="mt-1 text-[10px] text-text-muted">💡 왼쪽 레이어 패널에 표시될 이름입니다</p>
+              <p className="mt-1 text-[10px] text-text-muted">
+                💡 왼쪽 레이어 패널에 표시될 이름입니다
+              </p>
             </div>
 
             {/* 텍스트 내용 */}
-            {selectedElement.tagName !== "img" && (
+            {selectedElement.tagName !== 'img' && (
               <div className="pb-3 mb-3 border-b border-panel-border">
                 <label className="block mt-3 mb-1 text-xs text-text-muted">
                   텍스트 내용
                   {selectedElement.innerHTML && (
-                    <span className="ml-1 text-[10px] text-green-600">(엔터로 줄바꿈)</span>
+                    <span className="ml-1 text-[10px] text-green-600">
+                      (엔터로 줄바꿈)
+                    </span>
                   )}
                 </label>
                 <textarea
                   value={
                     selectedElement.innerHTML
-                      ? selectedElement.innerHTML.replace(/<br\s*\/?>/gi, "\n")
-                      : selectedElement.textContent || ""
+                      ? selectedElement.innerHTML.replace(/<br\s*\/?>/gi, '\n')
+                      : selectedElement.textContent || ''
                   }
                   onChange={(e) => handleTextContentChange(e.target.value)}
                   className="w-full p-2 text-xs rounded resize-y min-h-20 border bg-input-bg text-text-primary border-input-border"
                   placeholder="텍스트를 입력하세요 (엔터로 줄바꿈)"
                 />
                 {selectedElement.innerHTML && (
-                  <p className="mt-1 text-[10px] text-text-muted">💡 엔터키로 줄바꿈을 추가할 수 있습니다</p>
+                  <p className="mt-1 text-[10px] text-text-muted">
+                    💡 엔터키로 줄바꿈을 추가할 수 있습니다
+                  </p>
                 )}
               </div>
             )}
 
             {/* 이미지 속성 (img 태그 전용) */}
-            {selectedElement.tagName === "img" && (
+            {selectedElement.tagName === 'img' && (
               <div className="pb-3 mb-3 border-b border-panel-border">
                 <h4 className="mb-2 text-xs text-text-primary">이미지 속성</h4>
-                <label className="block mt-3 mb-1 text-xs text-text-muted">이미지 URL (src)</label>
+                <label className="block mt-3 mb-1 text-xs text-text-muted">
+                  이미지 URL (src)
+                </label>
                 <input
                   type="text"
-                  value={selectedElement.src || ""}
-                  onChange={(e) => handleAttributeChange("src", e.target.value)}
+                  value={selectedElement.src || ''}
+                  onChange={(e) => handleAttributeChange('src', e.target.value)}
                   className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                   placeholder="https://example.com/image.jpg"
                 />
-                <label className="block mt-3 mb-1 text-xs text-text-muted">대체 텍스트 (alt)</label>
+                <label className="block mt-3 mb-1 text-xs text-text-muted">
+                  대체 텍스트 (alt)
+                </label>
                 <input
                   type="text"
-                  value={selectedElement.alt || ""}
-                  onChange={(e) => handleAttributeChange("alt", e.target.value)}
+                  value={selectedElement.alt || ''}
+                  onChange={(e) => handleAttributeChange('alt', e.target.value)}
                   className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                   placeholder="이미지 설명"
                 />
@@ -264,14 +305,18 @@ function RightPanel() {
             )}
 
             {/* 링크 속성 (a 태그 전용) */}
-            {selectedElement.tagName === "a" && (
+            {selectedElement.tagName === 'a' && (
               <div className="pb-3 mb-3 border-b border-panel-border">
                 <h4 className="mb-2 text-xs text-text-primary">링크 속성</h4>
-                <label className="block mt-3 mb-1 text-xs text-text-muted">링크 URL (href)</label>
+                <label className="block mt-3 mb-1 text-xs text-text-muted">
+                  링크 URL (href)
+                </label>
                 <input
                   type="text"
-                  value={selectedElement.href || ""}
-                  onChange={(e) => handleAttributeChange("href", e.target.value)}
+                  value={selectedElement.href || ''}
+                  onChange={(e) =>
+                    handleAttributeChange('href', e.target.value)
+                  }
                   className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                   placeholder="https://example.com"
                 />
@@ -283,31 +328,37 @@ function RightPanel() {
               <h4 className="mb-2 text-xs text-text-primary">레이아웃</h4>
               <SpacingInput
                 label="패딩 (padding)"
-                value={String(selectedElement.style?.padding || "")}
-                onChange={(value) => handleStyleChange("padding", value)}
+                value={String(selectedElement.style?.padding || '')}
+                onChange={(value) => handleStyleChange('padding', value)}
               />
               <SpacingInput
                 label="마진 (margin)"
-                value={String(selectedElement.style?.margin || "")}
-                onChange={(value) => handleStyleChange("margin", value)}
+                value={String(selectedElement.style?.margin || '')}
+                onChange={(value) => handleStyleChange('margin', value)}
               />
             </div>
 
             {/* 텍스트 스타일 */}
             <div className="pb-3 mb-3 border-b border-panel-border">
               <h4 className="mb-2 text-xs text-text-primary">텍스트</h4>
-              <label className="block mt-3 mb-1 text-xs text-text-muted">글자 크기 (font-size)</label>
+              <label className="block mt-3 mb-1 text-xs text-text-muted">
+                글자 크기 (font-size)
+              </label>
               <input
                 type="text"
-                value={selectedElement.style?.fontSize || ""}
-                onChange={(e) => handleStyleChange("fontSize", e.target.value)}
+                value={selectedElement.style?.fontSize || ''}
+                onChange={(e) => handleStyleChange('fontSize', e.target.value)}
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="예: 16px"
               />
-              <label className="block mt-3 mb-1 text-xs text-text-muted">글자 굵기 (font-weight)</label>
+              <label className="block mt-3 mb-1 text-xs text-text-muted">
+                글자 굵기 (font-weight)
+              </label>
               <select
-                value={selectedElement.style?.fontWeight || "normal"}
-                onChange={(e) => handleStyleChange("fontWeight", e.target.value)}
+                value={selectedElement.style?.fontWeight || 'normal'}
+                onChange={(e) =>
+                  handleStyleChange('fontWeight', e.target.value)
+                }
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
               >
                 <option value="normal">Normal</option>
@@ -322,18 +373,22 @@ function RightPanel() {
                 <option value="800">800</option>
                 <option value="900">900</option>
               </select>
-              <label className="block mt-3 mb-1 text-xs text-text-muted">글자 색상 (color)</label>
+              <label className="block mt-3 mb-1 text-xs text-text-muted">
+                글자 색상 (color)
+              </label>
               <input
                 type="text"
-                value={selectedElement.style?.color || ""}
-                onChange={(e) => handleStyleChange("color", e.target.value)}
+                value={selectedElement.style?.color || ''}
+                onChange={(e) => handleStyleChange('color', e.target.value)}
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="예: #333333"
               />
-              <label className="block mt-3 mb-1 text-xs text-text-muted">정렬 (text-align)</label>
+              <label className="block mt-3 mb-1 text-xs text-text-muted">
+                정렬 (text-align)
+              </label>
               <select
-                value={selectedElement.style?.textAlign || "left"}
-                onChange={(e) => handleStyleChange("textAlign", e.target.value)}
+                value={selectedElement.style?.textAlign || 'left'}
+                onChange={(e) => handleStyleChange('textAlign', e.target.value)}
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
               >
                 <option value="left">왼쪽</option>
@@ -341,11 +396,15 @@ function RightPanel() {
                 <option value="right">오른쪽</option>
                 <option value="justify">양쪽 정렬</option>
               </select>
-              <label className="block mt-3 mb-1 text-xs text-text-muted">줄 간격 (line-height)</label>
+              <label className="block mt-3 mb-1 text-xs text-text-muted">
+                줄 간격 (line-height)
+              </label>
               <input
                 type="text"
-                value={selectedElement.style?.lineHeight || ""}
-                onChange={(e) => handleStyleChange("lineHeight", e.target.value)}
+                value={selectedElement.style?.lineHeight || ''}
+                onChange={(e) =>
+                  handleStyleChange('lineHeight', e.target.value)
+                }
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="예: 1.6"
               />
@@ -354,27 +413,37 @@ function RightPanel() {
             {/* 배경 및 테두리 */}
             <div className="pb-3 mb-3 border-b border-panel-border">
               <h4 className="mb-2 text-xs text-text-primary">배경 & 테두리</h4>
-              <label className="block mt-3 mb-1 text-xs text-text-muted">배경색 (background-color)</label>
+              <label className="block mt-3 mb-1 text-xs text-text-muted">
+                배경색 (background-color)
+              </label>
               <input
                 type="text"
-                value={selectedElement.style?.backgroundColor || ""}
-                onChange={(e) => handleStyleChange("backgroundColor", e.target.value)}
+                value={selectedElement.style?.backgroundColor || ''}
+                onChange={(e) =>
+                  handleStyleChange('backgroundColor', e.target.value)
+                }
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="예: #ffffff"
               />
-              <label className="block mt-3 mb-1 text-xs text-text-muted">테두리 (border)</label>
+              <label className="block mt-3 mb-1 text-xs text-text-muted">
+                테두리 (border)
+              </label>
               <input
                 type="text"
-                value={selectedElement.style?.border || ""}
-                onChange={(e) => handleStyleChange("border", e.target.value)}
+                value={selectedElement.style?.border || ''}
+                onChange={(e) => handleStyleChange('border', e.target.value)}
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="예: 1px solid #000"
               />
-              <label className="block mt-3 mb-1 text-xs text-text-muted">모서리 둥글기 (border-radius)</label>
+              <label className="block mt-3 mb-1 text-xs text-text-muted">
+                모서리 둥글기 (border-radius)
+              </label>
               <input
                 type="text"
-                value={selectedElement.style?.borderRadius || ""}
-                onChange={(e) => handleStyleChange("borderRadius", e.target.value)}
+                value={selectedElement.style?.borderRadius || ''}
+                onChange={(e) =>
+                  handleStyleChange('borderRadius', e.target.value)
+                }
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="예: 4px"
               />
@@ -383,46 +452,56 @@ function RightPanel() {
             {/* 크기 */}
             <div>
               <h4 className="mb-2 text-xs text-text-primary">크기</h4>
-              <label className="block mt-3 mb-1 text-xs text-text-muted">너비 (width)</label>
+              <label className="block mt-3 mb-1 text-xs text-text-muted">
+                너비 (width)
+              </label>
               <input
                 type="text"
-                value={selectedElement.style?.width || ""}
-                onChange={(e) => handleStyleChange("width", e.target.value)}
+                value={selectedElement.style?.width || ''}
+                onChange={(e) => handleStyleChange('width', e.target.value)}
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="예: 100% 또는 300px"
               />
-              <label className="block mt-3 mb-1 text-xs text-text-muted">높이 (height)</label>
+              <label className="block mt-3 mb-1 text-xs text-text-muted">
+                높이 (height)
+              </label>
               <input
                 type="text"
-                value={selectedElement.style?.height || ""}
-                onChange={(e) => handleStyleChange("height", e.target.value)}
+                value={selectedElement.style?.height || ''}
+                onChange={(e) => handleStyleChange('height', e.target.value)}
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="예: auto 또는 200px"
               />
-              <label className="block mt-3 mb-1 text-xs text-text-muted">최대 너비 (max-width)</label>
+              <label className="block mt-3 mb-1 text-xs text-text-muted">
+                최대 너비 (max-width)
+              </label>
               <input
                 type="text"
-                value={selectedElement.style?.maxWidth || ""}
-                onChange={(e) => handleStyleChange("maxWidth", e.target.value)}
+                value={selectedElement.style?.maxWidth || ''}
+                onChange={(e) => handleStyleChange('maxWidth', e.target.value)}
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="예: 800px"
               />
-              <label className="block mt-3 mb-1 text-xs text-text-muted">최소 높이 (min-height)</label>
+              <label className="block mt-3 mb-1 text-xs text-text-muted">
+                최소 높이 (min-height)
+              </label>
               <input
                 type="text"
-                value={selectedElement.style?.minHeight || ""}
-                onChange={(e) => handleStyleChange("minHeight", e.target.value)}
+                value={selectedElement.style?.minHeight || ''}
+                onChange={(e) => handleStyleChange('minHeight', e.target.value)}
                 className="w-full p-2 text-xs rounded border bg-input-bg text-text-primary border-input-border"
                 placeholder="예: 100px"
               />
             </div>
           </div>
         ) : (
-          <p className="text-sm text-text-muted">요소를 선택하면 속성이 여기에 표시됩니다.</p>
+          <p className="text-sm text-text-muted">
+            요소를 선택하면 속성이 여기에 표시됩니다.
+          </p>
         )}
       </div>
     </div>
-  );
+  )
 }
 
-export default RightPanel;
+export default RightPanel

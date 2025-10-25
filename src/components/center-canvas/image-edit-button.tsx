@@ -1,88 +1,93 @@
-"use client";
+'use client'
 
-import fileClient from "@/app/api/utils/file.client";
-import { useEditorStore } from "@/components/html-editor/html-editor.store";
-import { FILE_TYPE } from "@/config/common/code";
-import { Image as ImageIcon, Paperclip } from "lucide-react";
-import { useRef, useState } from "react";
-import { toast } from "react-toastify";
+import { useEditorStore } from '@/stores/html-editor.store'
+import { Image as ImageIcon, Paperclip } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { toast } from 'react-toastify'
 
 interface ImageEditButtonProps {
-  currentSrc: string;
-  onUpdate: (newSrc: string) => void;
+  currentSrc: string
+  onUpdate: (newSrc: string) => void
 }
 
 function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [newSrc, setNewSrc] = useState(currentSrc);
-  const [isUploading, setIsUploading] = useState(false);
-  const productInfo = useEditorStore((state) => state.productInfo);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isEditing, setIsEditing] = useState(false)
+  const [newSrc, setNewSrc] = useState(currentSrc)
+  const [isUploading, setIsUploading] = useState(false)
+  const productInfo = useEditorStore((state) => state.productInfo)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSave = () => {
-    if (newSrc.trim() !== "") {
-      onUpdate(newSrc.trim());
+    if (newSrc.trim() !== '') {
+      onUpdate(newSrc.trim())
     }
-    setIsEditing(false);
-  };
+    setIsEditing(false)
+  }
 
   const handleCancel = () => {
-    setNewSrc(currentSrc);
-    setIsEditing(false);
-  };
+    setNewSrc(currentSrc)
+    setIsEditing(false)
+  }
 
   // 파일 선택 트리거
   const handleFileSelect = () => {
-    fileInputRef.current?.click();
-  };
+    toast.warn('준비중인 기능입니다.')
+    return
+    fileInputRef.current?.click()
+  }
 
   // 파일 업로드 처리
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const file = e.target.files?.[0]
+    if (!file) return
 
     if (!productInfo?.fileKey) {
-      toast.warn("연결된 파일 키가 없습니다.");
-      return;
+      toast.warn('연결된 파일 키가 없습니다.')
+      return
     }
 
     // 이미지 파일인지 확인
-    if (!file.type.startsWith("image/")) {
-      alert("이미지 파일만 업로드할 수 있습니다.");
-      return;
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드할 수 있습니다.')
+      return
     }
 
-    setIsUploading(true);
+    setIsUploading(true)
 
     try {
       // FormData 생성
-      const formData = new FormData();
-      formData.append("file", file);
+      const formData = new FormData()
+      formData.append('file', file)
 
       // API 요청
-      const result = await fileClient.upload({ file, type: FILE_TYPE.SOURCE, fileKey: productInfo.fileKey });
+      // const result = await fileClient.upload({ file, type: FILE_TYPE.SOURCE, fileKey: productInfo.fileKey });
 
       // 서버에서 반환된 URL 추출
-      const imageUrl = result.url;
+      // const imageUrl = result.url;
+      const imageUrl = ''
 
       if (!imageUrl) {
-        throw new Error("서버에서 이미지 URL을 반환하지 않았습니다.");
+        throw new Error('서버에서 이미지 URL을 반환하지 않았습니다.')
       }
 
       // URL 입력창에 설정
-      setNewSrc(imageUrl);
-      toast.success("업로드 되었습니다.\n확인을 누르시면 적용됩니다.");
+      setNewSrc(imageUrl)
+      toast.success('업로드 되었습니다.\n확인을 누르시면 적용됩니다.')
     } catch (error) {
-      console.error("Image upload error:", error);
-      toast.error(error instanceof Error ? error.message : "이미지 업로드 중 오류가 발생했습니다.");
+      console.error('Image upload error:', error)
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : '이미지 업로드 중 오류가 발생했습니다.'
+      )
     } finally {
-      setIsUploading(false);
+      setIsUploading(false)
       // input 초기화 (같은 파일 재선택 가능하도록)
       if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+        fileInputRef.current.value = ''
       }
     }
-  };
+  }
 
   if (isEditing) {
     return (
@@ -92,7 +97,9 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
           onClick={handleFileSelect}
           disabled={isUploading}
           className={`p-1 rounded ${
-            isUploading ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-gray-200"
+            isUploading
+              ? 'cursor-not-allowed opacity-50'
+              : 'cursor-pointer hover:bg-gray-200'
           }`}
           title="파일에서 이미지 선택"
         >
@@ -100,7 +107,13 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
         </button>
 
         {/* 숨겨진 파일 input */}
-        <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden"
+        />
 
         {/* URL 입력창 */}
         <input
@@ -108,15 +121,15 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
           value={newSrc}
           onChange={(e) => setNewSrc(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSave();
-            } else if (e.key === "Escape") {
-              handleCancel();
+            if (e.key === 'Enter') {
+              handleSave()
+            } else if (e.key === 'Escape') {
+              handleCancel()
             }
           }}
           disabled={isUploading}
           className="px-2 py-1 text-xs border border-gray-300 rounded w-72 focus:outline-none focus:border-blue-500 disabled:bg-gray-100"
-          placeholder={isUploading ? "업로드 중..." : "이미지 URL을 입력하세요"}
+          placeholder={isUploading ? '업로드 중...' : '이미지 URL을 입력하세요'}
           autoFocus
         />
 
@@ -138,14 +151,14 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
           취소
         </button>
       </div>
-    );
+    )
   }
 
   const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsEditing(true);
-  };
+    e.preventDefault()
+    e.stopPropagation()
+    setIsEditing(true)
+  }
 
   return (
     <button
@@ -156,7 +169,7 @@ function ImageEditButton({ currentSrc, onUpdate }: ImageEditButtonProps) {
     >
       <ImageIcon size={13} />
     </button>
-  );
+  )
 }
 
-export default ImageEditButton;
+export default ImageEditButton
